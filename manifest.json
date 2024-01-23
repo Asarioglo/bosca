@@ -1,0 +1,45 @@
+{
+    "name": "Bosca-WEB-Extension",
+    "version": "0.1.0",
+    "description": "Build complex web extensions with little effort",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "dist/dev/background-worker.js",
+        "type": "module"
+    },
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhv6vpqpSWrKQ1RSGjCTycqMn1avPpZKJP2PR0DNAgH6qC3xUdsgJHjWpjgS0Y9chHaNBDvKJq9n7/nOmxTpp5lBRp8kCLxP/Plp/2CwsnZAVX6mNl58GYlfgGiMnswpfQ1vJ29NLs9C5Mn5Pcdf7QWK+WYqq36c/EEnKTGp3pdDUh1VJzUx1ynQz/z3i2ZBYkBi8fDk3Obku4eSruvgS2FBwPYdMnzwl9amy/jZvGlAM1iknsBJEt3obDyMbM+x+G7Is7vYTwlX80RxoDdBujgIVtNEUvmFO5fN/Sdw3UJJR/9YgGqoPwqO+jegeo8iZmhaqf73AVXrldfb2yuBszwIDAQAB",
+    "permissions": ["storage", "windows"],
+    "host_permissions": ["https://*/*", "http://*/*"],
+    "externally_connectable": {
+        "matches": [
+            "https://website-you-control.code/*",
+            "http://localhost:3006/*"
+        ]
+    },
+    "icons": {
+        "16": "assets/icons/16.png",
+        "32": "assets/icons/32.png",
+        "48": "assets/icons/48.png",
+        "64": "assets/icons/64.png",
+        "128": "assets/icons/128.png",
+        "472": "assets/icons/472.png"
+    },
+    "action": {
+        "default_title": "BOSCA",
+        "default_popup": "src/popup-react/build/index.html"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["assets/images/*"],
+            "matches": ["https://*/*", "http://*/*"]
+        }
+    ],
+
+    "content_scripts": [
+        {
+            "matches": ["https://*/*", "http://*/*"],
+            "js": ["dist/dev/content-script.js"],
+            "run_at": "document_idle"
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+{
+    "baseURL": "https://your-api-backend-url.code",
+    "debugMode": false,
+    "metricsBatchSize": 100
+}
