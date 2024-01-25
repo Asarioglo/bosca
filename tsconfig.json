@@ -10,5 +10,5 @@
       "resolveJsonModule": true
     },
     "include": ["src/**/*.ts"],
-    "exclude": ["node_modules", "src/popup-react"]
+    "exclude": ["node_modules", "src/popup"]
   }
