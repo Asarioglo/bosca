@@ -8,6 +8,11 @@ build_dev: ## Builds everything needed for the browser
 	npm run build:dev
 	cd ./src/popup-react && npm run build
 
+test: ## Runs all tests
+	@echo "Running tests"
+	npm run test
+	cd ./src/popup-react && npm run test
+
 .DEFAULT_GOAL := help
 help: ## Display this help message
 	@echo "Usage: make [TARGET] ..."
