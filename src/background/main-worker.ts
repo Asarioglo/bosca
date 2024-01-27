@@ -1,9 +1,5 @@
 import { Message } from "../interfaces/common/messaging/message";
-import { ChromeRuntime } from "../common/runtime/chrome/chrome-runtime";
-import { ChromeSyncStorage } from "../common/runtime/chrome/chrome-sync-storage";
-import { ChromeWindows } from "../common/runtime/chrome/chrome-windows";
 import Logger from "./utils/logger";
-import { IRuntime } from "../interfaces/common/runtime/i-runtime";
 import serviceRegistry from "./services/service-registry";
 import { IBrowser } from "../interfaces/common/runtime/i-browser";
 import { ConfigService } from "./services/config/config-service";

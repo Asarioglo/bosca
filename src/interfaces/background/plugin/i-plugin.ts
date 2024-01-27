@@ -1,9 +1,9 @@
 import { IBrowser } from "../../common/runtime/i-browser";
-import { IConfig } from "../iconfig";
 import { IServiceProvider } from "../services/i-service-provider";
 
 export interface IPlugin {
-    name: string;
+    getName(): string;
+    getVersion(): string;
     initialize(
         browser: IBrowser,
         svcProvider?: IServiceProvider,
@@ -11,4 +11,6 @@ export interface IPlugin {
     destroy(): Promise<void>;
     activate(): Promise<void>;
     deactivate(): Promise<void>;
+    getState(): any;
+    resetState(): Promise<void>;
 }
