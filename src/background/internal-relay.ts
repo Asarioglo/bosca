@@ -1,3 +1,3 @@
-import { EventEmitter } from "./event-emitter";
+import { EventEmitter } from "../common/event-emitter";
 
 export class InternalRelay extends EventEmitter {}

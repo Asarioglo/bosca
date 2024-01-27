@@ -84,6 +84,7 @@ export class MockRuntime implements IRuntime {
 
     onInstalled = new GenericEmitter();
     getManifest = jest.fn(() => ({ version: "1.0.0" }));
+    sendMessage = jest.fn();
 }
 
 export default () =>

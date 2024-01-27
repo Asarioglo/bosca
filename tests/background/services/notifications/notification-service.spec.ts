@@ -4,7 +4,7 @@ import {
     NotificationService,
     NotificationType,
 } from "../../../../src/background/services/notifications/notification-service";
-import { ServiceRegistry } from "../../../../src/background/services/service-registry";
+import { ServiceRegistry } from "../../../../src/common/services/service-registry";
 import { MessageTypes } from "../../../../src/common/messaging/message-types";
 import { IServiceProvider } from "../../../../src/interfaces/background/services/i-service-provider";
 import { Message } from "../../../../src/interfaces/common/messaging/message";

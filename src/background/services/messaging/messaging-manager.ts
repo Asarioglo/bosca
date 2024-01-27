@@ -1,6 +1,6 @@
 import { Message } from "../../../interfaces/common/messaging/message";
 import { IRuntime } from "../../../interfaces/common/runtime/i-runtime";
-import { EventEmitter } from "../../event-emitter";
+import { EventEmitter } from "../../../common/event-emitter";
 
 export type AsyncMessageArgs = {
     async: true;

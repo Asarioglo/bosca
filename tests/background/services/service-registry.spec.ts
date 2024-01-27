@@ -1,4 +1,4 @@
-import { ServiceRegistry } from "../../../src/background/services/service-registry";
+import { ServiceRegistry } from "../../../src/common/services/service-registry";
 import { IService } from "../../../src/interfaces/background/services/i-service";
 import { IServiceProvider } from "../../../src/interfaces/background/services/i-service-provider";
 
@@ -13,19 +13,13 @@ describe("ServiceRegistry", () => {
     let svc: Service;
 
     beforeEach(() => {
-        (ServiceRegistry as any).instance = null;
-        serviceRegistry = ServiceRegistry.getInstance();
+        serviceRegistry = new ServiceRegistry();
         svc = new Service(serviceRegistry);
     });
 
     afterEach(() => {
         // Clear the service registry after each test
         (serviceRegistry as any) = null;
-    });
-
-    it("should test singleton behaviour", () => {
-        const serviceRegistry2 = ServiceRegistry.getInstance();
-        expect(serviceRegistry).toBe(serviceRegistry2);
     });
 
     it("should register and retrieve a service", () => {

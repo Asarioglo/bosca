@@ -4,7 +4,7 @@ import {
     HTTPService,
     HTTPResponseError,
 } from "../../../../src/background/services/http/http-service";
-import { ServiceRegistry } from "../../../../src/background/services/service-registry";
+import { ServiceRegistry } from "../../../../src/common/services/service-registry";
 
 describe("HTTPService", () => {
     let httpService: HTTPService;
@@ -21,8 +21,7 @@ describe("HTTPService", () => {
     beforeEach(() => {
         cfgService = new ConfigService();
         cfgService.set("backendHost", "https://test_host.com");
-        (ServiceRegistry as any).instance = null;
-        serviceRegistry = ServiceRegistry.getInstance();
+        serviceRegistry = new ServiceRegistry();
         serviceRegistry.registerService(CoreServices.CONFIG, cfgService);
         httpService = new HTTPService(serviceRegistry);
         mockOkResponse = {
@@ -39,8 +38,7 @@ describe("HTTPService", () => {
     });
 
     it("should fail to initialize with wrong config", () => {
-        (ServiceRegistry as any).instance = null;
-        const svcRegistry = ServiceRegistry.getInstance();
+        const svcRegistry = new ServiceRegistry();
         expect(() => new HTTPService(svcRegistry)).toThrow(
             "Can't initialize HTTP service. Dependency missing: ConfigService",
         );

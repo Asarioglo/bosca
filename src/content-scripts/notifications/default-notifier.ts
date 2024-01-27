@@ -1,7 +1,8 @@
 import StartToastifyInstance from "toastify-js";
 import "toastify-js/src/toastify.css";
+import { INotifier } from "../../interfaces/content-scripts/notifications/i-notifier";
 
-export class Notifier {
+export class DefaultNotifier implements INotifier {
     private _appName: string;
     private _duration = 3000;
     private _position = "bottom";

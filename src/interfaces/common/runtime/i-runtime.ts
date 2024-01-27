@@ -35,4 +35,8 @@ export interface IRuntime {
     getManifest(): {
         version: string;
     };
+
+    sendMessage(message: any, responseCallback?: (response: any) => void): void;
+
+    lastError?: any;
 }

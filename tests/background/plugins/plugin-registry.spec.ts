@@ -1,25 +1,29 @@
 import { PluginRegistry } from "../../../src/background/plugin/plugin-registry";
 import { IPlugin } from "../../../src/interfaces/background/plugin/i-plugin";
 import { IServiceProvider } from "../../../src/interfaces/background/services/i-service-provider";
+import { IBrowser } from "../../../src/interfaces/common/runtime/i-browser";
+import getMockBrowser from "../../common/mock-runtime";
 
 describe("PluginRegistry", () => {
     let pluginRegistry: PluginRegistry;
     let serviceRegistry: IServiceProvider;
     let mockPlugin: IPlugin;
+    let mockBrowser: IBrowser;
 
     beforeEach(() => {
         serviceRegistry = {} as IServiceProvider;
-        pluginRegistry = new PluginRegistry(serviceRegistry);
+        pluginRegistry = new PluginRegistry();
         mockPlugin = {
             getName: jest.fn(),
-            initialize: jest.fn(),
             getVersion: jest.fn(),
+            start: jest.fn(),
             destroy: jest.fn(),
             activate: jest.fn(),
             deactivate: jest.fn(),
             getState: jest.fn(),
             resetState: jest.fn(),
         } as IPlugin;
+        mockBrowser = getMockBrowser();
     });
 
     it("should register a plugin", async () => {
@@ -27,7 +31,16 @@ describe("PluginRegistry", () => {
 
         const plugins = pluginRegistry.getPlugins();
         expect(plugins).toContain(mockPlugin);
-        expect(mockPlugin.initialize).toHaveBeenCalledWith(serviceRegistry);
+        expect(mockPlugin.start).not.toHaveBeenCalled();
+    });
+
+    it("should start all plugins", async () => {
+        await pluginRegistry.registerPlugin(mockPlugin);
+        await pluginRegistry.launch(mockBrowser, serviceRegistry);
+        expect(mockPlugin.start).toHaveBeenCalledWith(
+            mockBrowser,
+            serviceRegistry,
+        );
     });
 
     it("should reset the state", async () => {

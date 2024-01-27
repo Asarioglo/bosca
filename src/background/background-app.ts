@@ -1,6 +1,6 @@
 import { Message } from "../interfaces/common/messaging/message";
 import Logger from "./utils/logger";
-import serviceRegistry from "./services/service-registry";
+import { ServiceRegistry } from "../common/services/service-registry";
 import { IBrowser } from "../interfaces/common/runtime/i-browser";
 import { ConfigService } from "./services/config/config-service";
 import { IConfig } from "../interfaces/background/iconfig";
@@ -18,54 +18,67 @@ import { CoreServices } from "./services/core-services";
 import { InstalledPayload } from "../interfaces/background/events/installed-payload";
 import { CoreEvents } from "./core-events";
 import { AsyncMessageArgs } from "./services/messaging/messaging-manager";
+import { PluginRegistry } from "./plugin/plugin-registry";
+import { IPluginRegistry } from "../interfaces/background/plugin/i-plugin-registry";
 
-export class MainWorker {
+export class BackgroundApp {
     private _logger = new Logger("MainWorker");
     private _browser: IBrowser;
+    private _svcRegistry = new ServiceRegistry();
+    private _pluginRegistry: IPluginRegistry;
 
     constructor(browser: IBrowser, config: IConfig) {
         this._browser = browser;
+        this._pluginRegistry = new PluginRegistry();
 
+        // Initializing services here so that the user can use them before launching.
+        // For example, add configs to config service. If the user wants to override,
+        // they can do so before calling start() by registering a service with the same name.
+        this._initServices(config);
+    }
+
+    async start() {
+        this._initListeners();
+        await this._pluginRegistry.launch(this._browser, this._svcRegistry);
+    }
+
+    getServiceRegistry() {
+        return this._svcRegistry;
+    }
+
+    getPluginRegistry() {
+        return this._pluginRegistry;
+    }
+
+    private _initServices(config: IConfig) {
         const configService = new ConfigService(config);
         configService.set("version", this._extractVersion());
-        serviceRegistry.registerService(CoreServices.CONFIG, configService);
-        serviceRegistry.registerService(
+        this._svcRegistry.registerService(CoreServices.CONFIG, configService);
+
+        this._svcRegistry.registerService(
             CoreServices.HTTP,
-            new HTTPService(serviceRegistry),
+            new HTTPService(this._svcRegistry),
         );
-        serviceRegistry.registerService(
+        this._svcRegistry.registerService(
             CoreServices.MESSAGING,
-            new MessagingService(browser.runtime),
+            new MessagingService(this._browser.runtime),
         );
-        serviceRegistry.registerService(
+        this._svcRegistry.registerService(
             CoreServices.PLUGIN_MESSAGING,
-            new PluginMessagingService(serviceRegistry),
+            new PluginMessagingService(this._svcRegistry),
         );
-        serviceRegistry.registerService(
+        this._svcRegistry.registerService(
             CoreServices.NOTIFICATION,
-            new NotificationService(serviceRegistry),
+            new NotificationService(this._svcRegistry),
         );
-        serviceRegistry.registerService(
+        this._svcRegistry.registerService(
             CoreServices.WINDOW,
-            new WindowService(browser.windows),
+            new WindowService(this._browser.windows),
         );
-        serviceRegistry.registerService(
+        this._svcRegistry.registerService(
             CoreServices.STORAGE,
-            new StorageService(browser.storage),
+            new StorageService(this._browser.storage),
         );
-
-        // this._pluginRegistry = new PluginRegistry(
-        //     this._runtime,
-        //     storage,
-        //     this._windowService,
-        //     this._httpLayer,
-        //     this._internalRelay,
-        //     this._configService,
-        //     this._notificationService,
-        // );
-        this._initListeners();
-
-        // this._logger.disable();
     }
 
     private _initListeners() {
@@ -163,9 +176,19 @@ export class MainWorker {
     // }
 
     private _hearOpenCloseEvents() {
-        const messagingService = serviceRegistry.getService(
+        const messagingService = this._svcRegistry.getService(
             CoreServices.MESSAGING,
         ) as MessagingService;
+
+        if (!messagingService) {
+            throw new Error(
+                [
+                    "Messaging service not found. If you replaced the default service ",
+                    "registry, make sure you register the messaging service.",
+                ].join(""),
+            );
+        }
+
         messagingService.addListener(
             MessagingEvents.CLIENT_CONNECTED,
             (event: ClientConnectionEvent | Message | AsyncMessageArgs) => {
@@ -185,9 +208,18 @@ export class MainWorker {
     }
 
     private _hearInstalled() {
-        const pluginMessaging = serviceRegistry.getService(
+        const pluginMessaging = this._svcRegistry.getService(
             CoreServices.PLUGIN_MESSAGING,
         ) as PluginMessagingService;
+
+        if (!pluginMessaging) {
+            throw new Error(
+                [
+                    "Plugin messaging service not found. If you replaced the default service ",
+                    "registry, make sure you register the plugin messaging service.",
+                ].join(""),
+            );
+        }
 
         this._browser.runtime.onInstalled.addListener((details) => {
             pluginMessaging.emit(

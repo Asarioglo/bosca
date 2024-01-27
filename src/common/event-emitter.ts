@@ -40,4 +40,11 @@ export class EventEmitter {
 
         this.addListener(eventType, onceListener);
     }
+
+    public hasListeners(eventType?: string): number {
+        if (!eventType) {
+            return Object.keys(this._listeners).length;
+        }
+        return this._listeners[eventType] && this._listeners[eventType].length;
+    }
 }
