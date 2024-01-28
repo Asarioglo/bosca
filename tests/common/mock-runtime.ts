@@ -25,6 +25,10 @@ export class GenericEmitter<T1 = any, T2 = undefined, T3 = undefined> {
     emit(p1?: T1, p2?: T2, p3?: T3): void {
         this.callbacks.forEach((cb) => cb(p1, p2, p3));
     }
+
+    hasCallbacks(): boolean {
+        return this.callbacks.length > 0;
+    }
 }
 
 export class MockPort implements IPort {
@@ -37,6 +41,26 @@ export class MockPort implements IPort {
     onMessage = new GenericEmitter();
     onDisconnect = new GenericEmitter();
     public postMessage = jest.fn();
+
+    disconnect = jest.fn(() => {
+        this.onDisconnect.emit();
+    });
+
+    clearMocks() {
+        if ((this.onMessage.addListener as any).mockClear) {
+            (this.onMessage.addListener as any).mockClear();
+        }
+        if ((this.onMessage.removeListener as any).mockClear) {
+            (this.onMessage.removeListener as any).mockClear();
+        }
+        if ((this.onDisconnect.addListener as any).mockClear) {
+            (this.onDisconnect.addListener as any).mockClear();
+        }
+        if ((this.onDisconnect.removeListener as any).mockClear) {
+            (this.onDisconnect.removeListener as any).mockClear();
+        }
+        this.postMessage.mockClear();
+    }
 }
 
 export class MockStorage implements IStorage {
@@ -71,9 +95,13 @@ export class MockWindows implements IWindows {
 }
 
 export class MockRuntime implements IRuntime {
-    connect = jest.fn(
-        (options: { name: string }): IPort => new MockPort(options.name),
-    );
+    lastPort = new MockPort("test_port");
+
+    connect = jest.fn((options: { name: string }): IPort => {
+        this.lastPort.clearMocks();
+        this.lastPort.name = options.name;
+        return this.lastPort;
+    });
 
     onConnect = new GenericEmitter<IPort, undefined, undefined>();
     onConnectExternal = new GenericEmitter<IPort>();

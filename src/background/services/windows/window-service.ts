@@ -3,7 +3,7 @@ import {
     IWindows,
 } from "../../../interfaces/common/runtime/i-windows";
 
-export default class WindowService {
+export class WindowService {
     private _openWindows: { [key: string]: IWindow };
     private _windows: IWindows;
 

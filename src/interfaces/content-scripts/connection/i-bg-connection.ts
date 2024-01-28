@@ -11,6 +11,19 @@ export interface IBackgroundConnection {
      */
     connect(): Promise<IBackgroundConnection>;
     /**
+     * Should disconnect from the background script.
+     */
+    disconnect(): void;
+    /**
+     * Returns true if the connection is alive.
+     */
+    connected(): boolean;
+    /**
+     * If true, should attempt to reconnect if the connection is lost.
+     * @param attemptReconnect
+     */
+    attemptReconnect(attemptReconnect: boolean): IBackgroundConnection;
+    /**
      * If true, should ping the background script to keep the extension alive.
      * @param keepAlive
      */
@@ -21,6 +34,8 @@ export interface IBackgroundConnection {
     onMessage(callback: MessageCallback): void;
 
     onDisconnect(callback: DisconnectCallback): void;
+
+    setConnectionTimeout(timeout: number): IBackgroundConnection;
 }
 declare var IBackgroundConnection: {
     new (browser: IBrowser): IBackgroundConnection;

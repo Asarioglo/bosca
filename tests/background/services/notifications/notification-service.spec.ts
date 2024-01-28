@@ -5,7 +5,7 @@ import {
     NotificationType,
 } from "../../../../src/background/services/notifications/notification-service";
 import { ServiceRegistry } from "../../../../src/common/services/service-registry";
-import { MessageTypes } from "../../../../src/common/messaging/message-types";
+import { GlobalMessageTypes } from "../../../../src/common/messaging/global-message-types";
 import { IServiceProvider } from "../../../../src/interfaces/background/services/i-service-provider";
 import { Message } from "../../../../src/interfaces/common/messaging/message";
 import { MockMessagingService } from "../../../common/mock-messaging-service";
@@ -36,7 +36,7 @@ describe("NotificationService", () => {
         expect(messagingService.broadcastMessage).toHaveBeenCalledTimes(1);
         expect(messagingService.broadcastMessage).toHaveBeenCalledWith(
             expect.objectContaining({
-                type: MessageTypes.USER_NOTIFICATION,
+                type: GlobalMessageTypes.USER_NOTIFICATION,
                 payload: { message, type: NotificationType.SUCCESS },
             } as Message),
         );
@@ -49,7 +49,7 @@ describe("NotificationService", () => {
         expect(messagingService.broadcastMessage).toHaveBeenCalledTimes(1);
         expect(messagingService.broadcastMessage).toHaveBeenCalledWith(
             expect.objectContaining({
-                type: MessageTypes.USER_NOTIFICATION,
+                type: GlobalMessageTypes.USER_NOTIFICATION,
                 payload: { message, type: NotificationType.ERROR },
             } as Message),
         );
@@ -62,7 +62,7 @@ describe("NotificationService", () => {
         expect(messagingService.broadcastMessage).toHaveBeenCalledTimes(1);
         expect(messagingService.broadcastMessage).toHaveBeenCalledWith(
             expect.objectContaining({
-                type: MessageTypes.USER_NOTIFICATION,
+                type: GlobalMessageTypes.USER_NOTIFICATION,
                 payload: { message, type: NotificationType.WARNING },
             } as Message),
         );
@@ -75,7 +75,7 @@ describe("NotificationService", () => {
         expect(messagingService.broadcastMessage).toHaveBeenCalledTimes(1);
         expect(messagingService.broadcastMessage).toHaveBeenCalledWith(
             expect.objectContaining({
-                type: MessageTypes.USER_NOTIFICATION,
+                type: GlobalMessageTypes.USER_NOTIFICATION,
                 payload: { message, type: NotificationType.INFO },
             } as Message),
         );

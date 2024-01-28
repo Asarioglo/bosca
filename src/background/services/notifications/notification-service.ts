@@ -1,4 +1,4 @@
-import { MessageTypes } from "../../../common/messaging/message-types";
+import { GlobalMessageTypes } from "../../../common/messaging/global-message-types";
 import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
 import { CoreServices } from "../core-services";
 import { MessagingService } from "../messaging/messaging-service";
@@ -37,7 +37,7 @@ export class NotificationService {
             );
         }
         (messaging as MessagingService).broadcastMessage({
-            type: MessageTypes.USER_NOTIFICATION,
+            type: GlobalMessageTypes.USER_NOTIFICATION,
             payload: {
                 type,
                 message,

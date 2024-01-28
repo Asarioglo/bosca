@@ -1,4 +1,4 @@
-export enum MessageTypes {
+export enum GlobalMessageTypes {
     CONFIG_CHANGED = "config-changed",
     BROADCAST_STATE = "broadcast-state",
     CLOSE_WINDOW = "closeMe",

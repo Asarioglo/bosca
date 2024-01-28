@@ -1,4 +1,4 @@
-export type HTTPRequestParams = Record<string, string | number>;
+export type IHTTPRequestParams = Record<string, string | number>;
 
 export interface IHTTPResponseError extends Error {
     response: Response;
@@ -6,8 +6,8 @@ export interface IHTTPResponseError extends Error {
 }
 
 export interface IHTTPClient {
-    buildURL(uri: string, params?: HTTPRequestParams): URL;
-    buildGetRequest(url: string, params?: HTTPRequestParams): Request;
+    buildURL(uri: string, params?: IHTTPRequestParams): URL;
+    buildGetRequest(url: string, params?: IHTTPRequestParams): Request;
     buildPostRequest(url: string, data: any): Request;
     buildPutRequest(url: string, data: any): Request;
     handleResponse(response: Response): Promise<any>;

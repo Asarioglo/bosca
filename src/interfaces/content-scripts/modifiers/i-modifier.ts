@@ -1,4 +1,4 @@
-interface IModifier {
+export interface IModifier {
     /**
      * Apply the modifier to the page.
      */

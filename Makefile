@@ -1,13 +1,3 @@
-install_all: ## Installs all dependencies
-	@echo "Installing all dependencies"
-	npm install
-	cd ./src/popup-react && npm install
-
-build_dev: ## Builds everything needed for the browser
-	@echo "Building for development"
-	npm run build:dev
-	cd ./src/popup-react && npm run build
-
 test: ## Runs all tests
 	@echo "Running tests"
 	npm run test

@@ -1,8 +1,7 @@
-import { MessageTypes } from "../common/messaging/message-types";
+import { GlobalMessageTypes } from "../common/messaging/global-message-types";
 import { Message } from "../interfaces/common/messaging/message";
 import { BackgroundConnection } from "./connection/background-connection";
 import { IBrowser } from "../interfaces/common/runtime/i-browser";
-import { IRuntime } from "../interfaces/common/runtime/i-runtime";
 import { DefaultNotifier } from "./notifications/default-notifier";
 import { IBackgroundConnection } from "../interfaces/content-scripts/connection/i-bg-connection";
 import { INotifier } from "../interfaces/content-scripts/notifications/i-notifier";
@@ -10,6 +9,7 @@ import { IServiceProvider } from "../interfaces/background/services/i-service-pr
 import { ServiceRegistry } from "../common/services/service-registry";
 import { MessagingService } from "./services/messaging/messaging-service";
 import { CoreServices } from "./services/core-services";
+import "assets/styles/common.styles.css";
 
 export class ContentApp {
     private _enableNotifications: boolean;
@@ -54,7 +54,7 @@ export class ContentApp {
 
     private _hearNotifications(messagingSvc: MessagingService): void {
         messagingSvc.addListener(
-            MessageTypes.USER_NOTIFICATION,
+            GlobalMessageTypes.USER_NOTIFICATION,
             (message: Message) => {
                 let payload = message?.payload;
                 if (!payload) return;

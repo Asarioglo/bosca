@@ -5,7 +5,7 @@ export type InstalledReason =
     | "chrome_update"
     | "shared_module_update";
 
-export type InstalledPayload = {
+export type IInstalledPayload = {
     reason: string;
     previousVersion: string;
 };

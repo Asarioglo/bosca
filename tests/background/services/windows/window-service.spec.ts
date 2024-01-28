@@ -1,4 +1,4 @@
-import WindowService from "../../../../src/background/services/windows/window-service";
+import { WindowService } from "../../../../src/background/services/windows/window-service";
 import {
     IWindow,
     IWindows,

@@ -11,11 +11,11 @@ import {
     MessagingService,
 } from "./services/messaging/messaging-service";
 import { NotificationService } from "./services/notifications/notification-service";
-import WindowService from "./services/windows/window-service";
+import { WindowService } from "./services/windows/window-service";
 import { StorageService } from "./services/storage/storage-service";
 import { PluginMessagingService } from "./services/messaging/plugin-messaging-service";
 import { CoreServices } from "./services/core-services";
-import { InstalledPayload } from "../interfaces/background/events/installed-payload";
+import { IInstalledPayload } from "../interfaces/background/events/installed-payload";
 import { CoreEvents } from "./core-events";
 import { AsyncMessageArgs } from "./services/messaging/messaging-manager";
 import { PluginRegistry } from "./plugin/plugin-registry";
@@ -224,7 +224,7 @@ export class BackgroundApp {
         this._browser.runtime.onInstalled.addListener((details) => {
             pluginMessaging.emit(
                 CoreEvents.INSTALLED,
-                details as InstalledPayload,
+                details as IInstalledPayload,
             );
             const previousVersion = details.previousVersion;
             const reason = details.reason;

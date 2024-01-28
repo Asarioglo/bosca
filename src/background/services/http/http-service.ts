@@ -1,6 +1,6 @@
 import Logger from "../../utils/logger";
 import {
-    HTTPRequestParams,
+    IHTTPRequestParams,
     IHTTPResponseError,
 } from "../../../interfaces/background/http/i-http-client";
 import { IHTTPMiddleware } from "../../../interfaces/background/http/i-http-middleware";
@@ -69,7 +69,7 @@ export class HTTPService implements IService {
 
     async get(
         url: string,
-        params?: HTTPRequestParams,
+        params?: IHTTPRequestParams,
         oneTimeHeaders?: Headers,
     ) {
         let fullUrl = this._buildURL(url, params);
