@@ -1,6 +1,6 @@
-import { IStorage } from "../i-storage";
+import { IStorage } from "../../../interfaces/common/runtime/i-storage";
 
-export class ChromeSyncStorage implements IStorage {
+export const ChromeSyncStorage = {
     get(key: string): Promise<any> {
         return new Promise((resolve, reject) => {
             chrome.storage.sync.get(key, (result) => {
@@ -11,7 +11,7 @@ export class ChromeSyncStorage implements IStorage {
                 }
             });
         });
-    }
+    },
 
     set(key: string, value: any): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -23,5 +23,5 @@ export class ChromeSyncStorage implements IStorage {
                 }
             });
         });
-    }
-}
+    },
+} as IStorage;

@@ -1,12 +1,18 @@
-install_all: ## Installs all dependencies
-	@echo "Installing all dependencies"
-	npm install
-	cd ./src/popup-react && npm install
+test: ## Runs all tests
+	@echo "Running tests"
+	npm run test
 
-build_dev: ## Builds everything needed for the browser
-	@echo "Building for development"
-	npm run build:dev
-	cd ./src/popup-react && npm run build
+build: ## Builds the extension
+	rm -rf ./dist
+	@echo "Building library"
+	npm run build
+	cp package.json dist/
+
+# release: ## Builds the extension for release
+# 	rm -rf ./dist
+# 	@echo "Building release library"
+# 	npm run build
+# 	cp package.json dist/
 
 .DEFAULT_GOAL := help
 help: ## Display this help message

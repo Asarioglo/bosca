@@ -1,14 +1,16 @@
 {
     "compilerOptions": {
-      "target": "ES6",
+      "target": "es6",
       "module": "ES6",
       "strict": true,
       "moduleResolution": "node",
       "esModuleInterop": true,
-      "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "resolveJsonModule": true
+      "resolveJsonModule": true,
+      "declaration": true,
+      "declarationDir": "dist",
+      "outDir": "dist"
     },
-    "include": ["src/**/*.ts"],
-    "exclude": ["node_modules", "src/popup-react"]
+    "include": ["src/**/*.ts", "src/**/*.d.ts"],
+    "exclude": ["node_modules"]
   }
