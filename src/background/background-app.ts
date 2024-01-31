@@ -14,7 +14,7 @@ import { NotificationService } from "./services/notifications/notification-servi
 import { WindowService } from "./services/windows/window-service";
 import { StorageService } from "./services/storage/storage-service";
 import { PluginMessagingService } from "./services/messaging/plugin-messaging-service";
-import { CoreServices } from "./services/core-services";
+import { BGCoreServices } from "./services/core-services";
 import { IInstalledPayload } from "../interfaces/background/events/installed-payload";
 import { CoreEvents } from "./core-events";
 import { AsyncMessageArgs } from "./services/messaging/messaging-manager";
@@ -53,30 +53,30 @@ export class BackgroundApp {
     private _initServices(config: IConfig) {
         const configService = new ConfigService(config);
         configService.set("version", this._extractVersion());
-        this._svcRegistry.registerService(CoreServices.CONFIG, configService);
+        this._svcRegistry.registerService(BGCoreServices.CONFIG, configService);
 
         this._svcRegistry.registerService(
-            CoreServices.HTTP,
+            BGCoreServices.HTTP,
             new HTTPService(this._svcRegistry),
         );
         this._svcRegistry.registerService(
-            CoreServices.MESSAGING,
+            BGCoreServices.MESSAGING,
             new MessagingService(this._browser.runtime),
         );
         this._svcRegistry.registerService(
-            CoreServices.PLUGIN_MESSAGING,
+            BGCoreServices.PLUGIN_MESSAGING,
             new PluginMessagingService(this._svcRegistry),
         );
         this._svcRegistry.registerService(
-            CoreServices.NOTIFICATION,
+            BGCoreServices.NOTIFICATION,
             new NotificationService(this._svcRegistry),
         );
         this._svcRegistry.registerService(
-            CoreServices.WINDOW,
+            BGCoreServices.WINDOW,
             new WindowService(this._browser.windows),
         );
         this._svcRegistry.registerService(
-            CoreServices.STORAGE,
+            BGCoreServices.STORAGE,
             new StorageService(this._browser.storage),
         );
     }
@@ -177,7 +177,7 @@ export class BackgroundApp {
 
     private _hearOpenCloseEvents() {
         const messagingService = this._svcRegistry.getService(
-            CoreServices.MESSAGING,
+            BGCoreServices.MESSAGING,
         ) as MessagingService;
 
         if (!messagingService) {
@@ -209,7 +209,7 @@ export class BackgroundApp {
 
     private _hearInstalled() {
         const pluginMessaging = this._svcRegistry.getService(
-            CoreServices.PLUGIN_MESSAGING,
+            BGCoreServices.PLUGIN_MESSAGING,
         ) as PluginMessagingService;
 
         if (!pluginMessaging) {

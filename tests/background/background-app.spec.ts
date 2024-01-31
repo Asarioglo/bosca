@@ -2,7 +2,7 @@ import { IConfig } from "../../src/interfaces/background/iconfig";
 import { IBrowser } from "../../src/interfaces/common/runtime/i-browser";
 import { BackgroundApp } from "../../src/background/background-app";
 import createBrowser from "../common/mock-runtime";
-import { CoreServices } from "../../src/background/services/core-services";
+import { BGCoreServices } from "../../src/background/services/core-services";
 import { ConfigService } from "../../src/background/services/config/config-service";
 import { MessagingService } from "../../src/background/services/messaging/messaging-service";
 
@@ -24,12 +24,12 @@ describe("BackgroundApp", () => {
         ).toBeGreaterThan(0);
         let configSvc = backgroundApp
             .getServiceRegistry()
-            .getService(CoreServices.CONFIG);
+            .getService(BGCoreServices.CONFIG);
         expect(configSvc).toBeDefined();
         expect((configSvc as ConfigService).get("version")).not.toBeUndefined();
         let msgService = backgroundApp
             .getServiceRegistry()
-            .getService(CoreServices.MESSAGING);
+            .getService(BGCoreServices.MESSAGING);
         expect(msgService).toBeDefined();
         expect((msgService as MessagingService).hasListeners()).toBe(0);
         expect(browser.runtime.onInstalled.addListener).not.toHaveBeenCalled();

@@ -4,7 +4,7 @@ import {
     IHTTPResponseError,
 } from "../../../interfaces/background/http/i-http-client";
 import { IHTTPMiddleware } from "../../../interfaces/background/http/i-http-middleware";
-import { CoreServices } from "../core-services";
+import { BGCoreServices } from "../core-services";
 import urlJoin from "../../utils/url-join";
 import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
 import { IConfigManager } from "../../../interfaces/background/services/i-config-manager";
@@ -29,7 +29,7 @@ export class HTTPService implements IService {
     private _headerModifiers: HeaderModifier[] = [];
 
     constructor(serviceProvider: IServiceProvider) {
-        const configService = serviceProvider.getService(CoreServices.CONFIG);
+        const configService = serviceProvider.getService(BGCoreServices.CONFIG);
         if (!configService) {
             throw new Error(
                 "Can't initialize HTTP service. Dependency missing: ConfigService",

@@ -1,4 +1,4 @@
-export enum CoreServices {
+export enum BGCoreServices {
     CONFIG = "configService",
     HTTP = "httpService",
     MESSAGING = "messagingService",

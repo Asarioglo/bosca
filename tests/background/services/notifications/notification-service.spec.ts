@@ -1,4 +1,4 @@
-import { CoreServices } from "../../../../src/background/services/core-services";
+import { BGCoreServices } from "../../../../src/background/services/core-services";
 import { MessagingService } from "../../../../src/background/services/messaging/messaging-service";
 import {
     NotificationService,
@@ -19,7 +19,7 @@ describe("NotificationService", () => {
         serviceRegistry = new ServiceRegistry();
         messagingService = new MockMessagingService();
         serviceRegistry.registerService(
-            CoreServices.MESSAGING,
+            BGCoreServices.MESSAGING,
             messagingService as MessagingService,
         );
         notificationService = new NotificationService(serviceRegistry);

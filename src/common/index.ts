@@ -1,24 +1,7 @@
-import { Chrome } from "./runtime/chrome/chrome";
-import { ChromeRuntime } from "./runtime/chrome/chrome-runtime";
-import { ChromeSyncStorage } from "./runtime/chrome/chrome-sync-storage";
-import { ChromeWindows } from "./runtime/chrome/chrome-windows";
-
-const chromeRT = {
-    runtime: ChromeRuntime,
-    windows: ChromeWindows,
-    storage: ChromeSyncStorage,
-    browser: Chrome,
-};
-
-import { GlobalMessageTypes } from "./messaging/global-message-types";
-import { ServiceRegistry } from "./services/service-registry";
-import { EventEmitter } from "./event-emitter";
-
-export default {
-    Runtimes: {
-        Chrome: chromeRT,
-    },
-    GlobalMessageTypes,
-    ServiceRegistry,
-    EventEmitter,
-};
+export * from "./runtime/chrome/chrome";
+export * from "./runtime/chrome/chrome-runtime";
+export * from "./runtime/chrome/chrome-sync-storage";
+export * from "./runtime/chrome/chrome-windows";
+export * from "./messaging/global-message-types";
+export * from "./services/service-registry";
+export * from "./event-emitter";

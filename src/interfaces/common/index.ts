@@ -1,17 +1,6 @@
-import { Message } from "./messaging/message";
-import { IBrowser } from "./runtime/i-browser";
-import { IPort } from "./runtime/i-port";
-import { IRuntime } from "./runtime/i-runtime";
-import { IStorage } from "./runtime/i-storage";
-import { IWindow, IWindows, IWindowOptions } from "./runtime/i-windows";
-
-export {
-    Message,
-    IBrowser,
-    IPort,
-    IRuntime,
-    IStorage,
-    IWindow,
-    IWindows,
-    IWindowOptions,
-};
+export * from "./messaging/message";
+export * from "./runtime/i-browser";
+export * from "./runtime/i-port";
+export * from "./runtime/i-runtime";
+export * from "./runtime/i-storage";
+export * from "./runtime/i-windows";

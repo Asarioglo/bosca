@@ -1,5 +1,5 @@
 import { ConfigService } from "../../../../src/background/services/config/config-service";
-import { CoreServices } from "../../../../src/background/services/core-services";
+import { BGCoreServices } from "../../../../src/background/services/core-services";
 import {
     HTTPService,
     HTTPResponseError,
@@ -22,7 +22,7 @@ describe("HTTPService", () => {
         cfgService = new ConfigService();
         cfgService.set("backendHost", "https://test_host.com");
         serviceRegistry = new ServiceRegistry();
-        serviceRegistry.registerService(CoreServices.CONFIG, cfgService);
+        serviceRegistry.registerService(BGCoreServices.CONFIG, cfgService);
         httpService = new HTTPService(serviceRegistry);
         mockOkResponse = {
             ok: true,
@@ -43,7 +43,7 @@ describe("HTTPService", () => {
             "Can't initialize HTTP service. Dependency missing: ConfigService",
         );
         cfgService.set("backendHost", "test_host.com");
-        svcRegistry.registerService(CoreServices.CONFIG, cfgService);
+        svcRegistry.registerService(BGCoreServices.CONFIG, cfgService);
         expect(() => new HTTPService(svcRegistry)).toThrow(
             "Backend host in config should start with http:// or https://",
         );

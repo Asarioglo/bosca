@@ -1,11 +1,4 @@
-import bg from "./background";
-import common from "./common";
-import contentScripts from "./content-scripts";
-import interfaces from "./interfaces";
-
-export default {
-    Background: bg,
-    Common: common,
-    ContentScripts: contentScripts,
-    Types: interfaces,
-};
+export * as Background from "./background";
+export * as Common  from "./common";
+export * as ContentScripts from "./content-scripts";
+export * as Interfaces from "./interfaces";

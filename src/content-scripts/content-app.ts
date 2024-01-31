@@ -8,8 +8,7 @@ import { INotifier } from "../interfaces/content-scripts/notifications/i-notifie
 import { IServiceProvider } from "../interfaces/background/services/i-service-provider";
 import { ServiceRegistry } from "../common/services/service-registry";
 import { MessagingService } from "./services/messaging/messaging-service";
-import { CoreServices } from "./services/core-services";
-import "assets/styles/common.styles.css";
+import { ContentCoreServices } from "./services/core-services";
 
 export class ContentApp {
     private _enableNotifications: boolean;
@@ -46,7 +45,7 @@ export class ContentApp {
             this._browser,
         );
         this._serviceRegistry.registerService(
-            CoreServices.MESSAGING,
+            ContentCoreServices.MESSAGING,
             messagingSvc,
         );
         this._hearNotifications(messagingSvc);

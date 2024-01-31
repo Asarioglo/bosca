@@ -1,7 +1,18 @@
 test: ## Runs all tests
 	@echo "Running tests"
 	npm run test
-	cd ./src/popup-react && npm run test
+
+build: ## Builds the extension
+	rm -rf ./dist
+	@echo "Building library"
+	npm run build
+	cp package.json dist/
+
+# release: ## Builds the extension for release
+# 	rm -rf ./dist
+# 	@echo "Building release library"
+# 	npm run build
+# 	cp package.json dist/
 
 .DEFAULT_GOAL := help
 help: ## Display this help message

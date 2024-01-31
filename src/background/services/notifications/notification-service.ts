@@ -1,6 +1,6 @@
 import { GlobalMessageTypes } from "../../../common/messaging/global-message-types";
 import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
-import { CoreServices } from "../core-services";
+import { BGCoreServices } from "../core-services";
 import { MessagingService } from "../messaging/messaging-service";
 
 export enum NotificationType {
@@ -15,7 +15,7 @@ export class NotificationService {
     constructor(serviceRegistry: IServiceProvider) {
         this._svcRegistry = serviceRegistry;
         const messagingService = serviceRegistry.getService(
-            CoreServices.MESSAGING,
+            BGCoreServices.MESSAGING,
         );
         if (!messagingService) {
             throw new Error(
@@ -30,7 +30,7 @@ export class NotificationService {
         }
         // Could cache this, but it's not worth it at the moment. Maybe a plugin
         // will replace the service.
-        const messaging = this._svcRegistry.getService(CoreServices.MESSAGING);
+        const messaging = this._svcRegistry.getService(BGCoreServices.MESSAGING);
         if (!messaging) {
             throw new Error(
                 "Can't send notification. Messaging service not found.",

@@ -1,3 +1,3 @@
-export enum CoreServices {
+export enum ContentCoreServices {
     MESSAGING = "messaging",
 }
