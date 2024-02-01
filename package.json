@@ -14,7 +14,6 @@
         "jest-transform-stub": "^2.0.0",
         "prettier": "^3.2.4",
         "style-loader": "^3.3.4",
-        "terser-webpack-plugin": "^5.3.10",
         "ts-jest": "^29.1.2",
         "ts-loader": "^9.5.1",
         "tsup": "^8.0.1",

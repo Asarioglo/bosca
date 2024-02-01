@@ -1,10 +1,10 @@
-import { IConfig } from "../../../interfaces/background/iconfig";
+import { IConfig } from "../../../interfaces/common/iconfig";
 import { IConfigManager } from "../../../interfaces/background/services/i-config-manager";
 
-export class ConfigService implements IConfigManager {
+export class ConfigService<T = IConfig> implements IConfigManager {
     private config = new Map<string, any>();
 
-    constructor(config?: IConfig) {
+    constructor(config?: T) {
         if (config) this.set(config);
     }
 
@@ -20,5 +20,13 @@ export class ConfigService implements IConfigManager {
                 this.config.set(k, v);
             }
         }
+    }
+
+    public getFullConfig(): IConfig {
+        const config: any = {};
+        this.config.forEach((value, key) => {
+            config[key] = value;
+        });
+        return config;
     }
 }

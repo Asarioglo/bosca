@@ -11,3 +11,4 @@ export * from "./utils/logger";
 export *  from "./plugin/plugin-registry";
 export *  from "./core-events";
 export *  from "./background-app";
+export *  from "./actions";

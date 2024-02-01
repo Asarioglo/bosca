@@ -3,7 +3,7 @@ import Logger from "./utils/logger";
 import { ServiceRegistry } from "../common/services/service-registry";
 import { IBrowser } from "../interfaces/common/runtime/i-browser";
 import { ConfigService } from "./services/config/config-service";
-import { IConfig } from "../interfaces/background/iconfig";
+import { IConfig } from "../interfaces/common/iconfig";
 import { HTTPService } from "./services/http/http-service";
 import {
     ClientConnectionEvent,
@@ -20,6 +20,8 @@ import { CoreEvents } from "./core-events";
 import { AsyncMessageArgs } from "./services/messaging/messaging-manager";
 import { PluginRegistry } from "./plugin/plugin-registry";
 import { IPluginRegistry } from "../interfaces/background/plugin/i-plugin-registry";
+import { Actions } from "./actions";
+import { IConfigManager } from "../interfaces";
 
 export class BackgroundApp {
     private _logger = new Logger("MainWorker");
@@ -84,6 +86,7 @@ export class BackgroundApp {
     private _initListeners() {
         this._hearInstalled();
         this._hearOpenCloseEvents();
+        this._hearStateRequests();
         // this._hearOneWayMessages();
         // this._hearAsyncMessages();
         // this._internalRelay.addListener(
@@ -231,18 +234,47 @@ export class BackgroundApp {
         });
     }
 
+    private _hearStateRequests() {
+        const messagingService = this._svcRegistry.getService(
+            BGCoreServices.MESSAGING,
+        ) as MessagingService;
+
+        if (!messagingService) {
+            throw new Error(
+                [
+                    "Messaging service not found. If you replaced the default service ",
+                    "registry, make sure you register the messaging service.",
+                ].join(""),
+            );
+        }
+
+        messagingService.addListener(
+            Actions.GET_STATE,
+            (message: AsyncMessageArgs | Message | ClientConnectionEvent) => {
+                if ((message as AsyncMessageArgs).async) {
+                    const state = this._pluginRegistry.getFullState();
+                    this._ammendState(state);
+                    (message as AsyncMessageArgs).sendResponse(
+                        state
+                    );
+                    return;
+                }
+            },
+        );
+    }
+
     private _extractVersion(): string {
         const manifest = this._browser.runtime.getManifest();
         return manifest.version;
     }
 
-    // private _ammendState(state: any) {
-    //     state.version = this._configService.get("version");
-    //     state.debugMode = this._configService.get("debugMode");
-    //     state.appName = this._configService.get("appName");
-    //     state.contactEmail = this._configService.get("contactEmail");
-    //     state.website = this._configService.get("website");
-    //     state.telegram = this._configService.get("telegram");
-    //     return state;
-    // }
+    private _ammendState(state: any) {
+        const configSvc = this._svcRegistry.getService(BGCoreServices.CONFIG) as IConfigManager;
+        const config = configSvc.getFullConfig();
+        for (const key in config) {
+            state[key] = config[key];
+        }
+
+        return state;
+    }
 }
