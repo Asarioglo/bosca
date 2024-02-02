@@ -3,10 +3,20 @@ test: ## Runs all tests
 	npm run test
 
 build: ## Builds the extension
+	# Get rid of the old build
 	rm -rf ./dist
+	
+	# tsc compiles the typescript files
 	@echo "Building library"
 	npm run build
+	
+	# Copy the package.json to the dist folder
 	cp package.json dist/
+
+	# Copy the styles for content script
+	mkdir -p dist/content-scripts/assets/styles
+	cp src/content-scripts/assets/styles/* dist/content-scripts/assets/styles
+
 
 # release: ## Builds the extension for release
 # 	rm -rf ./dist

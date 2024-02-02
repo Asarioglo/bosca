@@ -1,5 +1,4 @@
 export * from "../common/iconfig";
-export * from "./events/installed-payload";
 export * from "./plugin/i-plugin-registry";
 export * from "./plugin/i-plugin";
 export * from "./services/i-service";

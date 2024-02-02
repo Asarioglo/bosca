@@ -1,5 +1,6 @@
 import StartToastifyInstance from "toastify-js";
 import "toastify-js/src/toastify.css";
+import "../assets/styles/notification.styles.css"
 import { INotifier } from "../../interfaces/content-scripts/notifications/i-notifier";
 
 export class DefaultNotifier implements INotifier {
@@ -23,11 +24,16 @@ export class DefaultNotifier implements INotifier {
         }
         let typeConfig = this._types[type] || this._types.info;
 
-        StartToastifyInstance({
+        const instance = StartToastifyInstance({
             text: `${this._appName}: ${message}`,
             duration: this._duration,
             gravity: this._position,
             ...typeConfig,
-        }).showToast();
+        })
+        instance.showToast();
+    }
+
+    setDuration(duration: number): void {
+        this._duration = duration;
     }
 }

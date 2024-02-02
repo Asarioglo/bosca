@@ -19,9 +19,9 @@ describe("HTTPService", () => {
     });
 
     beforeEach(() => {
-        cfgService = new ConfigService();
-        cfgService.set("backendHost", "https://test_host.com");
         serviceRegistry = new ServiceRegistry();
+        cfgService = new ConfigService(serviceRegistry);
+        cfgService.set("backendHost", "https://test_host.com");
         serviceRegistry.registerService(BGCoreServices.CONFIG, cfgService);
         httpService = new HTTPService(serviceRegistry);
         mockOkResponse = {
