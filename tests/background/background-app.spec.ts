@@ -1,4 +1,4 @@
-import { IConfig } from "../../src/interfaces/background/iconfig";
+import { IConfig } from "../../src/interfaces";
 import { IBrowser } from "../../src/interfaces/common/runtime/i-browser";
 import { BackgroundApp } from "../../src/background/background-app";
 import createBrowser from "../common/mock-runtime";
@@ -10,6 +10,7 @@ describe("BackgroundApp", () => {
     let backgroundApp: BackgroundApp;
     let browser: IBrowser;
     let config: IConfig;
+    let numOfBaseSubscriptions = 3;
 
     beforeEach(() => {
         browser = createBrowser();
@@ -37,6 +38,6 @@ describe("BackgroundApp", () => {
         backgroundApp.start();
 
         expect(browser.runtime.onInstalled.addListener).toHaveBeenCalled();
-        expect((msgService as MessagingService).hasListeners()).toBe(2);
+        expect((msgService as MessagingService).hasListeners()).toBe(numOfBaseSubscriptions);
     });
 });
