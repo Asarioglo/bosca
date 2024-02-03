@@ -10,7 +10,7 @@ describe("BackgroundApp", () => {
     let backgroundApp: BackgroundApp;
     let browser: IBrowser;
     let config: IConfig;
-    let numOfBaseSubscriptions = 3;
+    let numOfBaseSubscriptions = 4;
 
     beforeEach(() => {
         browser = createBrowser();

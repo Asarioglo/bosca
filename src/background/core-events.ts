@@ -1,8 +1,10 @@
 import { Message } from "../interfaces";
+import { NotificationType } from "./services/notifications/notification-service";
 
 export enum CoreEvents {
     INSTALLED = "installed",
     CONFIG_CHANGED = "config-changed",
+    USER_NOTIFICATION = "user-notification",
 }
 
 export type InstalledReason =
@@ -32,4 +34,14 @@ export type ConfigChangePayload = {
 export type ConfigChangeMessage = Message & {
     type: CoreEvents.CONFIG_CHANGED;
     payload: ConfigChangePayload;
+}
+
+export type UserNotificationPayload = {
+    type: NotificationType;
+    message: string;
+}
+
+export type UserNotificationMessage = Message & {
+    type: CoreEvents.USER_NOTIFICATION;
+    payload: UserNotificationPayload;
 }

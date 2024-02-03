@@ -15,7 +15,7 @@ import { WindowService } from "./services/windows/window-service";
 import { StorageService } from "./services/storage/storage-service";
 import { PluginMessagingService } from "./services/messaging/plugin-messaging-service";
 import { BGCoreServices } from "./services/core-services";
-import { CoreEvents, InstalledPayload, InstalledMessage } from "./core-events";
+import { CoreEvents, InstalledPayload, InstalledMessage, UserNotificationMessage } from "./core-events";
 import { AsyncMessageArgs } from "./services/messaging/messaging-manager";
 import { PluginRegistry } from "./plugin/plugin-registry";
 import { IPluginRegistry } from "../interfaces/background/plugin/i-plugin-registry";
@@ -109,9 +109,30 @@ export class BackgroundApp {
             );
         }
 
+        const notificationService = this._svcRegistry.getService(
+            BGCoreServices.NOTIFICATION,
+        ) as NotificationService;
+
         this._hearInstalled(messagingService, pluginMessaging);
         this._hearOpenCloseEvents(messagingService);
         this._hearStateRequests(messagingService);
+        this._hearNotificationRequests(messagingService, notificationService);
+    }
+
+    private _hearNotificationRequests(messagingService: MessagingService, notificationService: NotificationService) {
+        messagingService.addListener(
+            CoreEvents.USER_NOTIFICATION,
+            (message: Message | AsyncMessageArgs | ClientConnectionEvent) => {
+                message = message as UserNotificationMessage;
+                const type = message.payload?.type;
+                const msg = message.payload?.message;
+                if (!type || !msg) return;
+                notificationService.sendNotificaiton(
+                    type,
+                    msg
+                )
+            },
+        );
     }
 
     private _hearOpenCloseEvents(messagingService: MessagingService) {
