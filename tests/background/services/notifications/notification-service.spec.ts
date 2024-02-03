@@ -1,9 +1,7 @@
 import { BGCoreServices } from "../../../../src/background/services/core-services";
 import { MessagingService } from "../../../../src/background/services/messaging/messaging-service";
-import {
-    NotificationService,
-    NotificationType,
-} from "../../../../src/background/services/notifications/notification-service";
+import { NotificationService } from "../../../../src/background/services/notifications/notification-service";
+import { NotificationType } from "../../../../src/common/notifications/notification-type";
 import { ServiceRegistry } from "../../../../src/common/services/service-registry";
 import { GlobalMessageTypes } from "../../../../src/common/messaging/global-message-types";
 import { IServiceProvider } from "../../../../src/interfaces/background/services/i-service-provider";

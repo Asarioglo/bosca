@@ -2,33 +2,26 @@ import { GlobalMessageTypes } from "../common/messaging/global-message-types";
 import { Message } from "../interfaces/common/messaging/message";
 import { BackgroundConnection } from "./connection/background-connection";
 import { IBrowser } from "../interfaces/common/runtime/i-browser";
-import { DefaultNotifier } from "./notifications/default-notifier";
 import { IBackgroundConnection } from "../interfaces/content-scripts/connection/i-bg-connection";
-import { INotifier } from "../interfaces/content-scripts/notifications/i-notifier";
 import { IServiceProvider } from "../interfaces/background/services/i-service-provider";
 import { ServiceRegistry } from "../common/services/service-registry";
 import { MessagingService } from "./services/messaging/messaging-service";
 import { ContentCoreServices } from "./services/core-services";
+import { NotificationService } from "./services/notifications/notification-service";
+import { NotificationType } from "../common";
+import { ConfigChangeMessage, ConfigChangePayload } from "../background";
 
 export class ContentApp {
-    private _enableNotifications: boolean;
     private _bgConnector: IBackgroundConnection;
     private _browser: IBrowser;
     private _name: string;
-    private _notifier: INotifier;
     private _serviceRegistry: IServiceProvider;
 
     constructor(browser: IBrowser, appName: string) {
         this._browser = browser;
         this._name = appName;
-        this._notifier = new DefaultNotifier(this._name);
         this._bgConnector = new BackgroundConnection(this._browser);
-        this._enableNotifications = true;
         this._serviceRegistry = new ServiceRegistry();
-    }
-
-    setNotifier(notifier: INotifier): void {
-        this._notifier = notifier;
     }
 
     setBgConnector(bgConnector: IBackgroundConnection): void {
@@ -36,6 +29,8 @@ export class ContentApp {
     }
 
     async start(): Promise<void> {
+        // TODO: Separate service initialization from start method
+        // this will allow the user to override services before starting the app.
         if (!this._bgConnector) {
             throw new Error("Background connector not set");
         }
@@ -48,10 +43,43 @@ export class ContentApp {
             ContentCoreServices.MESSAGING,
             messagingSvc,
         );
-        this._hearNotifications(messagingSvc);
+
+        const notificationSvc = new NotificationService(
+            this._serviceRegistry,
+            this._name,
+        );
+        this._serviceRegistry.registerService(
+            ContentCoreServices.NOTIFICATION,
+            notificationSvc,
+        );
+        this._hearNotifications(messagingSvc, notificationSvc);
+        this._hearConfigChange(messagingSvc);
     }
 
-    private _hearNotifications(messagingSvc: MessagingService): void {
+    protected _handleConfigChange(message: ConfigChangeMessage): void {
+        let payload = message?.payload as ConfigChangePayload;
+        if (!payload) return;
+
+        if ("notifications.enabled" in payload) {
+            payload["notifications.enabled"].newValue === true
+                ? this.enableNotifications()
+                : this.disableNotifications();
+        }
+    }
+
+    private _hearConfigChange(messagingService: MessagingService) {
+        messagingService.addListener(
+            GlobalMessageTypes.CONFIG_CHANGED,
+            (message: Message) => {
+                this._handleConfigChange(message as ConfigChangeMessage);
+            },
+        );
+    }
+
+    private _hearNotifications(
+        messagingSvc: MessagingService,
+        notificationSvc: NotificationService,
+    ): void {
         messagingSvc.addListener(
             GlobalMessageTypes.USER_NOTIFICATION,
             (message: Message) => {
@@ -59,21 +87,28 @@ export class ContentApp {
                 if (!payload) return;
                 if (!payload.message) return;
 
-                let type = payload.type;
-                if (!type) type = "info";
+                let type = payload.type as NotificationType;
+                if (!type) type = NotificationType.INFO;
 
-                if (this._enableNotifications && this._notifier) {
-                    this._notifier.showNotification(type, payload.message);
-                }
+                notificationSvc.showNotification(
+                    type,
+                    payload.message as string,
+                );
             },
         );
     }
 
     public enableNotifications(): void {
-        this._enableNotifications = true;
+        let notSvc = this._serviceRegistry.getService<NotificationService>(
+            ContentCoreServices.NOTIFICATION,
+        );
+        notSvc?.enable();
     }
 
     public disableNotifications(): void {
-        this._enableNotifications = false;
+        let notSvc = this._serviceRegistry.getService<NotificationService>(
+            ContentCoreServices.NOTIFICATION,
+        );
+        notSvc?.disable();
     }
 }

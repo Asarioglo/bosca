@@ -1,9 +1,9 @@
 import StartToastifyInstance from "toastify-js";
 import "toastify-js/src/toastify.css";
-import { INotifier } from "../../interfaces/content-scripts/notifications/i-notifier";
+import "../../assets/styles/notification.styles.css";
+import { INotifier } from "../../../interfaces/content-scripts/notifications/i-notifier";
 
 export class DefaultNotifier implements INotifier {
-    private _appName: string;
     private _duration = 3000;
     private _position = "bottom";
     private _types: Record<string, any> = {
@@ -13,9 +13,7 @@ export class DefaultNotifier implements INotifier {
         info: { className: "toastify-info" },
     };
 
-    constructor(appName: string = "Bosca") {
-        this._appName = appName;
-    }
+    constructor() {}
 
     showNotification(type: string, message: string): void {
         if (!type) {
@@ -23,11 +21,16 @@ export class DefaultNotifier implements INotifier {
         }
         let typeConfig = this._types[type] || this._types.info;
 
-        StartToastifyInstance({
-            text: `${this._appName}: ${message}`,
+        const instance = StartToastifyInstance({
+            text: message,
             duration: this._duration,
             gravity: this._position,
             ...typeConfig,
-        }).showToast();
+        });
+        instance.showToast();
+    }
+
+    setDuration(duration: number): void {
+        this._duration = duration;
     }
 }

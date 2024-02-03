@@ -16,8 +16,12 @@ export class ServiceRegistry implements IServiceProvider {
         this.services.set(name, service);
     }
 
-    public getService(name: string): IService | null {
-        return this.services.get(name) || null;
+    public getService<T = IService>(name: string): T | null {
+        let svc = this.services.get(name);
+        if (svc) {
+            return svc as T;
+        }
+        return null;
     }
 
     public deleteService(name: string): void {

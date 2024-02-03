@@ -1,0 +1,15 @@
+/* NOTIFICATIONS */
+.toastify-success {
+    background: linear-gradient(135deg, #209620, #29b729);
+}
+.toastify-error {
+    background: linear-gradient(135deg, #eb5151, #b84747);
+    background-color: #ea6363;
+}
+.toastify-warning {
+    background: linear-gradient(135deg, #f5a623, #d08d20);
+    background-color: #f5a623;
+}
+.toastify-info {
+    background: linear-gradient(135deg, #73a5ff, #5477f5);
+}
