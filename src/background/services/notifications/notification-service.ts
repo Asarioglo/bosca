@@ -2,13 +2,7 @@ import { GlobalMessageTypes } from "../../../common/messaging/global-message-typ
 import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
 import { BGCoreServices } from "../core-services";
 import { MessagingService } from "../messaging/messaging-service";
-
-export enum NotificationType {
-    SUCCESS = "success",
-    ERROR = "error",
-    WARNING = "warning",
-    INFO = "info",
-}
+import { NotificationType } from "../../../common/notifications/notification-type";
 
 export class NotificationService {
     private _svcRegistry: IServiceProvider;

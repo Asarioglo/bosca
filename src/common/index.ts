@@ -5,3 +5,4 @@ export * from "./runtime/chrome/chrome-windows";
 export * from "./messaging/global-message-types";
 export * from "./services/service-registry";
 export * from "./event-emitter";
+export * from "./notifications/notification-type";

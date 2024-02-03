@@ -12,4 +12,7 @@ export interface ConfigEntry {
 
 export interface IConfig extends ConfigEntry {
     version: string;
+    notifications: {
+        enabled: boolean;
+    };
 }

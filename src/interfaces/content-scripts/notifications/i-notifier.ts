@@ -3,5 +3,5 @@ export interface INotifier {
 }
 declare var INotifier: {
     prototype: INotifier;
-    new (appName: string): INotifier;
+    new (): INotifier;
 };

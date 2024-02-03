@@ -10,7 +10,7 @@ describe("BackgroundApp", () => {
     let backgroundApp: BackgroundApp;
     let browser: IBrowser;
     let config: IConfig;
-    let numOfBaseSubscriptions = 4;
+    let numOfBaseSubscriptions = 5;
 
     beforeEach(() => {
         browser = createBrowser();
@@ -38,6 +38,8 @@ describe("BackgroundApp", () => {
         backgroundApp.start();
 
         expect(browser.runtime.onInstalled.addListener).toHaveBeenCalled();
-        expect((msgService as MessagingService).hasListeners()).toBe(numOfBaseSubscriptions);
+        expect((msgService as MessagingService).hasListeners()).toBe(
+            numOfBaseSubscriptions,
+        );
     });
 });

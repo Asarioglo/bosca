@@ -3,7 +3,7 @@ import Logger from "./utils/logger";
 import { ServiceRegistry } from "../common/services/service-registry";
 import { IBrowser } from "../interfaces/common/runtime/i-browser";
 import { ConfigService } from "./services/config/config-service";
-import { IConfig } from "../interfaces/common/iconfig";
+import { ConfigEntry, IConfig } from "../interfaces/common/iconfig";
 import { HTTPService } from "./services/http/http-service";
 import {
     ClientConnectionEvent,
@@ -15,11 +15,16 @@ import { WindowService } from "./services/windows/window-service";
 import { StorageService } from "./services/storage/storage-service";
 import { PluginMessagingService } from "./services/messaging/plugin-messaging-service";
 import { BGCoreServices } from "./services/core-services";
-import { CoreEvents, InstalledPayload, InstalledMessage, UserNotificationMessage } from "./core-events";
+import {
+    CoreEvents,
+    InstalledPayload,
+    InstalledMessage,
+    UserNotificationMessage,
+} from "./core-events";
 import { AsyncMessageArgs } from "./services/messaging/messaging-manager";
 import { PluginRegistry } from "./plugin/plugin-registry";
 import { IPluginRegistry } from "../interfaces/background/plugin/i-plugin-registry";
-import { Actions } from "./actions";
+import { Actions, AsyncActions, SetConfigPayload } from "./actions";
 import { IConfigManager } from "../interfaces";
 
 export class BackgroundApp {
@@ -113,13 +118,39 @@ export class BackgroundApp {
             BGCoreServices.NOTIFICATION,
         ) as NotificationService;
 
+        if (!notificationService) {
+            throw new Error(
+                [
+                    "Notification service not found. If you replaced the default service ",
+                    "registry, make sure you register the notification service.",
+                ].join(""),
+            );
+        }
+
+        const configService = this._svcRegistry.getService<ConfigService>(
+            BGCoreServices.CONFIG,
+        ) as ConfigService;
+
+        if (!configService) {
+            throw new Error(
+                [
+                    "Config service not found. If you replaced the default service ",
+                    "registry, make sure you register the config service.",
+                ].join(""),
+            );
+        }
+
         this._hearInstalled(messagingService, pluginMessaging);
         this._hearOpenCloseEvents(messagingService);
         this._hearStateRequests(messagingService);
         this._hearNotificationRequests(messagingService, notificationService);
+        this._hearConfigChangeRequests(messagingService, configService);
     }
 
-    private _hearNotificationRequests(messagingService: MessagingService, notificationService: NotificationService) {
+    private _hearNotificationRequests(
+        messagingService: MessagingService,
+        notificationService: NotificationService,
+    ) {
         messagingService.addListener(
             CoreEvents.USER_NOTIFICATION,
             (message: Message | AsyncMessageArgs | ClientConnectionEvent) => {
@@ -127,10 +158,7 @@ export class BackgroundApp {
                 const type = message.payload?.type;
                 const msg = message.payload?.message;
                 if (!type || !msg) return;
-                notificationService.sendNotificaiton(
-                    type,
-                    msg
-                )
+                notificationService.sendNotificaiton(type, msg);
             },
         );
     }
@@ -154,30 +182,54 @@ export class BackgroundApp {
         );
     }
 
-    private _hearInstalled(messagingService: MessagingService, pluginMessaging: PluginMessagingService) {
-        this._browser.runtime.onInstalled.addListener((details: InstalledPayload) => {
-            pluginMessaging.emit(
-                CoreEvents.INSTALLED,
-                details as InstalledPayload,
-            );
-            messagingService.broadcastMessage({
-                type: CoreEvents.INSTALLED,
-                payload: details,
-            } as InstalledMessage);
-        });
+    private _hearInstalled(
+        messagingService: MessagingService,
+        pluginMessaging: PluginMessagingService,
+    ) {
+        this._browser.runtime.onInstalled.addListener(
+            (details: InstalledPayload) => {
+                pluginMessaging.emit(
+                    CoreEvents.INSTALLED,
+                    details as InstalledPayload,
+                );
+                messagingService.broadcastMessage({
+                    type: CoreEvents.INSTALLED,
+                    payload: details,
+                } as InstalledMessage);
+            },
+        );
     }
 
     private _hearStateRequests(messagingService: MessagingService) {
         messagingService.addListener(
-            Actions.GET_STATE,
+            AsyncActions.GET_STATE,
             (message: AsyncMessageArgs | Message | ClientConnectionEvent) => {
                 if ((message as AsyncMessageArgs).async) {
                     const state = this._pluginRegistry.getFullState();
                     this._ammendState(state);
-                    (message as AsyncMessageArgs).sendResponse(
-                        state
-                    );
+                    (message as AsyncMessageArgs).sendResponse(state);
                     return;
+                }
+            },
+        );
+    }
+
+    private _hearConfigChangeRequests(
+        messagingService: MessagingService,
+        configService: ConfigService,
+    ) {
+        messagingService.addListener(
+            Actions.SET_CONFIG,
+            (message: Message | AsyncMessageArgs | ClientConnectionEvent) => {
+                const payload = (message as Message)
+                    .payload as SetConfigPayload;
+                if (!payload) return;
+
+                if (payload.key && payload.value) {
+                    configService.set(payload.key, payload.value);
+                }
+                if (payload.config) {
+                    configService.set(payload.config);
                 }
             },
         );
@@ -189,7 +241,9 @@ export class BackgroundApp {
     }
 
     private _ammendState(state: any) {
-        const configSvc = this._svcRegistry.getService(BGCoreServices.CONFIG) as IConfigManager;
+        const configSvc = this._svcRegistry.getService(
+            BGCoreServices.CONFIG,
+        ) as IConfigManager;
         const config = configSvc.getFullConfig();
         for (const key in config) {
             state[key] = config[key];
