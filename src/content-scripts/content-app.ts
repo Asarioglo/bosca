@@ -10,6 +10,7 @@ import { ContentCoreServices } from "./services/core-services";
 import { NotificationService } from "./services/notifications/notification-service";
 import { NotificationType } from "../common";
 import { ConfigChangeMessage, ConfigChangePayload } from "../background";
+import { NodeLifecycleService } from "./services/content-ops/node-lifecycle-service";
 
 export class ContentApp {
     private _bgConnector: IBackgroundConnection;
@@ -52,6 +53,13 @@ export class ContentApp {
             ContentCoreServices.NOTIFICATION,
             notificationSvc,
         );
+
+        const nodeLifcycleSvc = new NodeLifecycleService();
+        this._serviceRegistry.registerService(
+            ContentCoreServices.NODE_LIFECYCLE,
+            nodeLifcycleSvc,
+        );
+
         this._hearNotifications(messagingSvc, notificationSvc);
         this._hearConfigChange(messagingSvc);
     }
