@@ -14,14 +14,14 @@ export class NodeSelector {
 
         if (
             this._options.class &&
-            !node.classList.contains(this._options.class)
+            !node.classList?.contains(this._options.class)
         ) {
             return false;
         }
 
         if (
             this._options.type &&
-            node.tagName.toLowerCase() !== this._options.type
+            node.tagName?.toLowerCase() !== this._options.type
         ) {
             return false;
         }

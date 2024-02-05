@@ -3,6 +3,7 @@ import { IRuntime } from "../../interfaces/common/runtime/i-runtime";
 import { IPort } from "../../interfaces/common/runtime/i-port";
 import { IBrowser } from "../../interfaces/common/runtime/i-browser";
 import { IBackgroundConnection } from "../../interfaces/content-scripts/connection/i-bg-connection";
+import Logger from "../../common/utils/logger";
 
 export class BackgroundConnection implements IBackgroundConnection {
     private _runtime: IRuntime;
@@ -15,6 +16,7 @@ export class BackgroundConnection implements IBackgroundConnection {
     private _keepAliveTimer: any = null;
     private _connectTimeout: number = 5e3;
     private _isConnected: boolean = false;
+    private _logger: Logger = new Logger("BackgroundConnection");
 
     private _onMsgInternal_: (message: Message) => void;
     private _onDisconnectInternal_: () => void;
@@ -29,9 +31,13 @@ export class BackgroundConnection implements IBackgroundConnection {
     }
 
     async connect(): Promise<BackgroundConnection> {
+        this._logger.log("Connecting to background script");
         this._clearPort();
         return new Promise((resolve, reject) => {
             let timeout = setTimeout(() => {
+                this._logger.log(
+                    "Timed out waiting for ack from background script",
+                );
                 reject("Timed out waiting for ack from background script");
                 this._port?.onMessage.removeListener(ackCallback);
                 this._port?.onDisconnect.removeListener(
@@ -42,6 +48,7 @@ export class BackgroundConnection implements IBackgroundConnection {
                 // We may lose some messages here, but that's ok
                 // Later we could store and replay them
                 if (message.type === "ack") {
+                    this._logger.log("Received ack from background script");
                     clearTimeout(timeout);
                     this._port?.onMessage.removeListener(ackCallback);
                     this._port?.onDisconnect.removeListener(
@@ -54,9 +61,14 @@ export class BackgroundConnection implements IBackgroundConnection {
                     this._startKeepAlive();
                     this._isConnected = true;
                     resolve(this);
+                } else {
+                    this._logger.log(
+                        "Received unexpected message while waiting for ack",
+                    );
                 }
             };
             let handleInstantDisconnect = () => {
+                this._logger.log("Disconnected before ack received");
                 clearTimeout(timeout);
                 this._port?.onMessage.removeListener(ackCallback);
                 this._port?.onDisconnect.removeListener(
@@ -130,14 +142,14 @@ export class BackgroundConnection implements IBackgroundConnection {
     }
 
     private _onMessage(message: Message): void {
-        console.log("BG_CONNECT: message received: " + message.type);
+        this._logger.log("BG_CONNECT: message received: " + message.type);
         if (this._onMessageCallback) {
             this._onMessageCallback(message);
         }
     }
 
     private _onDisconnect(): void {
-        console.log("BG_CONNECT: disconnected");
+        this._logger.log("BG_CONNECT: disconnected");
         this._clearPort();
         this._stopKeepAlive();
         if (this._attemptReconnect) {
@@ -174,7 +186,12 @@ export class BackgroundConnection implements IBackgroundConnection {
 
     sendMessage(message: Message): void {
         if (this._port) {
-            this._port.postMessage(message);
+            try {
+                this._port.postMessage(message);
+            } catch (e) {
+                this._logger.warn("Error sending message: " + e);
+                this._onDisconnect();
+            }
         }
     }
 

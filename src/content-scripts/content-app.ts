@@ -23,19 +23,23 @@ export class ContentApp {
         this._name = appName;
         this._bgConnector = new BackgroundConnection(this._browser);
         this._serviceRegistry = new ServiceRegistry();
+        this._initCoreServices();
     }
 
     setBgConnector(bgConnector: IBackgroundConnection): void {
         this._bgConnector = bgConnector;
     }
 
-    async start(): Promise<void> {
+    getServiceRegistry(): IServiceProvider {
+        return this._serviceRegistry;
+    }
+
+    _initCoreServices() {
         // TODO: Separate service initialization from start method
         // this will allow the user to override services before starting the app.
         if (!this._bgConnector) {
             throw new Error("Background connector not set");
         }
-        await this._bgConnector.connect();
         const messagingSvc = new MessagingService(
             this._bgConnector,
             this._browser,
@@ -59,6 +63,25 @@ export class ContentApp {
             ContentCoreServices.NODE_LIFECYCLE,
             nodeLifcycleSvc,
         );
+    }
+
+    async start(): Promise<void> {
+        this._bgConnector.connect();
+        const messagingSvc = this._serviceRegistry.getService<MessagingService>(
+            ContentCoreServices.MESSAGING,
+        );
+        if (!messagingSvc) {
+            throw new Error("Content App: Messaging service not found");
+        }
+
+        const notificationSvc =
+            this._serviceRegistry.getService<NotificationService>(
+                ContentCoreServices.NOTIFICATION,
+            );
+
+        if (!notificationSvc) {
+            throw new Error("Content App: Notification service not found");
+        }
 
         this._hearNotifications(messagingSvc, notificationSvc);
         this._hearConfigChange(messagingSvc);

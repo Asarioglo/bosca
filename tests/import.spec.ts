@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { Background, Common, ContentScripts, Interfaces } from "../src";
 import getMockBrowser from "./utils/mock-runtime";
 
