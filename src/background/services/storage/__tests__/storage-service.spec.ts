@@ -1,5 +1,5 @@
-import { StorageService } from "../../../../src/background/services/storage/storage-service";
-import { IStorage } from "../../../../src/interfaces/common/runtime/i-storage";
+import { StorageService } from "../storage-service";
+import { IStorage } from "../../../../interfaces/common/runtime/i-storage";
 
 describe("StorageService", () => {
     let storageService: StorageService;

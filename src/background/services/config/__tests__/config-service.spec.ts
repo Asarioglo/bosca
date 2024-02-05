@@ -1,11 +1,11 @@
-import { CoreEvents } from "../../../../src/background/core-events";
-import { ConfigService } from "../../../../src/background/services/config/config-service";
-import { BGCoreServices } from "../../../../src/background/services/core-services";
-import { MessagingService } from "../../../../src/background/services/messaging/messaging-service";
-import { PluginMessagingService } from "../../../../src/background/services/messaging/plugin-messaging-service";
-import { ServiceRegistry } from "../../../../src/common/services/service-registry";
-import { IRuntime } from "../../../../src/interfaces";
-import getMockBrowser from "../../../common/mock-runtime";
+import { CoreEvents } from "../../../core-events";
+import { ConfigService } from "../config-service";
+import { BGCoreServices } from "../../core-services";
+import { MessagingService } from "../../messaging/messaging-service";
+import { PluginMessagingService } from "../../messaging/plugin-messaging-service";
+import { ServiceRegistry } from "../../../../common/services/service-registry";
+import { IRuntime } from "../../../../interfaces";
+import getMockBrowser from "../../../../../tests/utils/mock-runtime";
 
 describe("ConfigService", () => {
     let configService: ConfigService;

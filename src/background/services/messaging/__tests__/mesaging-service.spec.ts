@@ -1,13 +1,10 @@
-import { IBrowser } from "../../../../src/interfaces/common/runtime/i-browser";
-import {
-    MessagingEvents,
-    MessagingService,
-} from "../../../../src/background/services/messaging/messaging-service";
+import { IBrowser } from "../../../../interfaces/common/runtime/i-browser";
+import { MessagingEvents, MessagingService } from "../messaging-service";
 import getMockRuntime, {
     GenericEmitter,
     MockPort,
-} from "../../../common/mock-runtime";
-import { Message } from "../../../../src/interfaces/common/messaging/message";
+} from "../../../../../tests/utils/mock-runtime";
+import { Message } from "../../../../interfaces/common/messaging/message";
 
 describe("MessagingService", () => {
     let browser: IBrowser;

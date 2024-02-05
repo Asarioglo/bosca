@@ -1,10 +1,10 @@
-import { IConfig } from "../../src/interfaces";
-import { IBrowser } from "../../src/interfaces/common/runtime/i-browser";
-import { BackgroundApp } from "../../src/background/background-app";
-import createBrowser from "../common/mock-runtime";
-import { BGCoreServices } from "../../src/background/services/core-services";
-import { ConfigService } from "../../src/background/services/config/config-service";
-import { MessagingService } from "../../src/background/services/messaging/messaging-service";
+import { IConfig } from "../../interfaces";
+import { IBrowser } from "../../interfaces/common/runtime/i-browser";
+import { BackgroundApp } from "../background-app";
+import createBrowser from "../../../tests/utils/mock-runtime";
+import { BGCoreServices } from "../services/core-services";
+import { ConfigService } from "../services/config/config-service";
+import { MessagingService } from "../services/messaging/messaging-service";
 
 describe("BackgroundApp", () => {
     let backgroundApp: BackgroundApp;

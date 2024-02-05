@@ -1,4 +1,4 @@
-import Logger from "../../../src/background/utils/logger";
+import Logger from "../logger";
 
 describe("Logger", () => {
     let logger: Logger;

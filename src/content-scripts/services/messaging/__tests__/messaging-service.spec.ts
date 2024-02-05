@@ -1,11 +1,10 @@
-import { BackgroundConnection } from "../../../src/content-scripts/connection/background-connection";
-import { IBrowser } from "../../../src/interfaces/common/runtime/i-browser";
-import { IPort } from "../../../src/interfaces/common/runtime/i-port";
+import { BackgroundConnection } from "../../../connection/background-connection";
+import { IBrowser } from "../../../../interfaces/common/runtime/i-browser";
 import getMockRuntime, {
-    MockPort,
     MockRuntime,
-} from "../../common/mock-runtime";
-import { MessagingService } from "../../../src/content-scripts/services/messaging/messaging-service";
+    MockPort,
+} from "../../../../../tests/utils/mock-runtime";
+import { MessagingService } from "../messaging-service";
 
 describe("BackgroundConnection", () => {
     let browser: IBrowser;

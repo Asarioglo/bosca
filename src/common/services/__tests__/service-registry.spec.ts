@@ -1,6 +1,6 @@
-import { ServiceRegistry } from "../../../src/common/services/service-registry";
-import { IService } from "../../../src/interfaces/background/services/i-service";
-import { IServiceProvider } from "../../../src/interfaces/background/services/i-service-provider";
+import { ServiceRegistry } from "../service-registry";
+import { IService } from "../../../interfaces/background/services/i-service";
+import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
 
 class Service implements IService {
     constructor(serviceProvider: IServiceProvider) {

@@ -1,13 +1,13 @@
-import { WindowService } from "../../../../src/background/services/windows/window-service";
+import { WindowService } from "../window-service";
 import {
     IWindow,
     IWindows,
-} from "../../../../src/interfaces/common/runtime/i-windows";
+} from "../../../../interfaces/common/runtime/i-windows";
 import {
     GenericEmitter,
     MockWindow,
     MockWindows,
-} from "../../../common/mock-runtime";
+} from "../../../../../tests/utils/mock-runtime";
 
 describe("WindowService", () => {
     let windowService: WindowService;

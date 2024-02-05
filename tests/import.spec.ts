@@ -1,5 +1,5 @@
-import {Background, Common, ContentScripts, Interfaces} from "../src";
-import getMockBrowser from "./common/mock-runtime";
+import { Background, Common, ContentScripts, Interfaces } from "../src";
+import getMockBrowser from "./utils/mock-runtime";
 
 describe("app", () => {
     let chrome = getMockBrowser();
@@ -8,7 +8,7 @@ describe("app", () => {
         chrome = getMockBrowser();
         global.chrome = global.chrome || chrome;
     });
-``
+    ``;
     it("should export app", () => {
         expect(Background).toBeDefined();
         expect(Common).toBeDefined();
@@ -17,7 +17,7 @@ describe("app", () => {
     });
 
     it("should run an application", () => {
-        const app = new Background.BackgroundApp(chrome, {});
+        const app = new Background.BackgroundApp(chrome, {} as any);
         const contentApp = new ContentScripts.ContentApp(chrome, "test");
     });
 });

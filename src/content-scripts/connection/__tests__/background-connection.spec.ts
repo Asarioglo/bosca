@@ -1,6 +1,8 @@
-import { BackgroundConnection } from "../../../src/content-scripts/connection/background-connection";
-import { IBrowser } from "../../../src/interfaces/common/runtime/i-browser";
-import getMockRuntime, { MockRuntime } from "../../common/mock-runtime";
+import { BackgroundConnection } from "../background-connection";
+import { IBrowser } from "../../../interfaces/common/runtime/i-browser";
+import getMockRuntime, {
+    MockRuntime,
+} from "../../../../tests/utils/mock-runtime";
 
 describe("BackgroundConnection", () => {
     let browser: IBrowser;

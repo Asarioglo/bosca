@@ -1,10 +1,7 @@
-import { ConfigService } from "../../../../src/background/services/config/config-service";
-import { BGCoreServices } from "../../../../src/background/services/core-services";
-import {
-    HTTPService,
-    HTTPResponseError,
-} from "../../../../src/background/services/http/http-service";
-import { ServiceRegistry } from "../../../../src/common/services/service-registry";
+import { ConfigService } from "../../config/config-service";
+import { BGCoreServices } from "../../core-services";
+import { HTTPService, HTTPResponseError } from "../http-service";
+import { ServiceRegistry } from "../../../../common/services/service-registry";
 
 describe("HTTPService", () => {
     let httpService: HTTPService;

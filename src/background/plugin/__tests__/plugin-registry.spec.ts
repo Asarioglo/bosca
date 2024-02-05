@@ -1,8 +1,8 @@
-import { PluginRegistry } from "../../../src/background/plugin/plugin-registry";
-import { IPlugin } from "../../../src/interfaces/background/plugin/i-plugin";
-import { IServiceProvider } from "../../../src/interfaces/background/services/i-service-provider";
-import { IBrowser } from "../../../src/interfaces/common/runtime/i-browser";
-import getMockBrowser from "../../common/mock-runtime";
+import { PluginRegistry } from "../plugin-registry";
+import { IPlugin } from "../../../interfaces/background/plugin/i-plugin";
+import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
+import { IBrowser } from "../../../interfaces/common/runtime/i-browser";
+import getMockBrowser from "../../../../tests/utils/mock-runtime";
 
 describe("PluginRegistry", () => {
     let pluginRegistry: PluginRegistry;
