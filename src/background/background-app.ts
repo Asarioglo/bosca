@@ -1,5 +1,5 @@
 import { Message } from "../interfaces/common/messaging/message";
-import Logger from "./utils/logger";
+import Logger from "../common/utils/logger";
 import { ServiceRegistry } from "../common/services/service-registry";
 import { IBrowser } from "../interfaces/common/runtime/i-browser";
 import { ConfigService } from "./services/config/config-service";

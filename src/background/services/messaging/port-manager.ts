@@ -2,7 +2,7 @@ import { Message } from "../../../interfaces/common/messaging/message";
 import { IRuntime } from "../../../interfaces/common/runtime/i-runtime";
 import { IPort } from "../../../interfaces/common/runtime/i-port";
 import { EventEmitter } from "../../../common/event-emitter";
-import Logger from "../../utils/logger";
+import Logger from "../../../common/utils/logger";
 
 export enum PortManagerEvents {
     PORT_MESSAGE = "port-message",

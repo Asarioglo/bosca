@@ -1,4 +1,4 @@
-import Logger from "../../utils/logger";
+import Logger from "../../../common/utils/logger";
 import {
     IHTTPRequestParams,
     IHTTPResponseError,

@@ -1,4 +1,4 @@
-import Logger from "../utils/logger";
+import Logger from "../../common/utils/logger";
 import { IPlugin } from "../../interfaces/background/plugin/i-plugin";
 import { IServiceProvider } from "../../interfaces/background/services/i-service-provider";
 import { IPluginRegistry } from "../../interfaces/background/plugin/i-plugin-registry";
