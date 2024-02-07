@@ -1,0 +1,33 @@
+[id*="bosca-actions-container"] {
+    position: absolute;
+    z-index: 1001;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+    border: 1px solid rgb(235, 235, 235);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    background-color: beige;
+    padding: 3px;
+}
+
+[id*="bosca-actions-icon-container"] {
+    height: 100%;
+}
+
+[id*="bosca-actions-buttons-container"] {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+[id*="bosca-actions-icon"] {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+[id*="bosca-actions-container"].hidden {
+    visibility: hidden;
+}

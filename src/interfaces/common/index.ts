@@ -4,3 +4,4 @@ export * from "./runtime/i-port";
 export * from "./runtime/i-runtime";
 export * from "./runtime/i-storage";
 export * from "./runtime/i-windows";
+export * from "./runtime/i-extension";

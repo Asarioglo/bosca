@@ -7,6 +7,7 @@ import {
     IWindow,
     IWindowOptions,
 } from "../../src/interfaces/common/runtime/i-windows";
+import { IExtension } from "../../src/interfaces/common/runtime/i-extension";
 
 export class GenericEmitter<T1 = any, T2 = undefined, T3 = undefined> {
     callbacks: ((p1?: T1, p2?: T2, p3?: T3) => void)[] = [];
@@ -113,6 +114,11 @@ export class MockRuntime implements IRuntime {
     onInstalled = new GenericEmitter();
     getManifest = jest.fn(() => ({ version: "1.0.0" }));
     sendMessage = jest.fn();
+    getURL = jest.fn((path: string) => path);
+}
+
+export class MockExtension implements IExtension {
+    getURL = jest.fn();
 }
 
 export default () =>
@@ -120,4 +126,5 @@ export default () =>
         runtime: new MockRuntime(),
         storage: new MockStorage(),
         windows: new MockWindows(),
+        extension: new MockExtension(),
     }) as IBrowser;

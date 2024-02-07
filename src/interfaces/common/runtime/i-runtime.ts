@@ -39,4 +39,6 @@ export interface IRuntime {
     sendMessage(message: any, responseCallback?: (response: any) => void): void;
 
     lastError?: any;
+
+    getURL(path: string): string;
 }
