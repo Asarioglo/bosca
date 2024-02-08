@@ -6,4 +6,5 @@ export * from "./services/content-ops/node-lifecycle-service";
 export * from "./services/core-services";
 export * from "./modifiers/floating-action/floating-actions-modifier";
 export * from "./modifiers/floating-action/action";
+export * from "./modifiers/overlay/overlay-modifier";
 export * from "./content-app";

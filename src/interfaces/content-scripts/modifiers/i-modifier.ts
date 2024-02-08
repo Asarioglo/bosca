@@ -4,6 +4,10 @@ export interface IModifier {
      */
     apply(): void;
     /**
+     * Show the modifications if they were hidden.
+     */
+    show(): void;
+    /**
      * Hide the modifications, but don't remove the elements from the page.
      */
     hide(): void;

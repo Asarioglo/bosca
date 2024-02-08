@@ -30,6 +30,10 @@ export class ContentApp {
         this._bgConnector = bgConnector;
     }
 
+    getBgConnector(): IBackgroundConnection {
+        return this._bgConnector;
+    }
+
     getServiceRegistry(): IServiceProvider {
         return this._serviceRegistry;
     }

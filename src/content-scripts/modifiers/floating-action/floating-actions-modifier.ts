@@ -63,9 +63,7 @@ export class FloatingActionsModifier implements IModifier {
      * If actions already initialized, shows them. Otherwise, creates the container and appends it to the parent.
      */
     apply() {
-        if (this._container) {
-            this._show();
-        } else {
+        if (!this._container) {
             this._container = this._createMainContainer();
             this._buttonsContainer = this._createButtonsContainer();
             this._actions.forEach((action) => {
@@ -91,6 +89,15 @@ export class FloatingActionsModifier implements IModifier {
     public hide() {
         if (this._container && !this._isHiddenOrNotInitialized()) {
             this._container.classList.add("hidden");
+        }
+    }
+
+    public show(x?: number, y?: number) {
+        if (x && y) {
+            this.setPosition(x, y);
+        }
+        if (this._container && this._isHiddenOrNotInitialized()) {
+            this._container.classList.remove("hidden");
         }
     }
 
@@ -243,9 +250,6 @@ export class FloatingActionsModifier implements IModifier {
 
         const { x, y } = this._position;
 
-        // First, adjust for screen edges
-        const screenX = window.innerWidth;
-        const screenY = window.innerHeight;
         const width = this._container.offsetWidth;
         const height = this._container.offsetHeight;
 
@@ -268,7 +272,7 @@ export class FloatingActionsModifier implements IModifier {
                 newY = newY - height;
                 break;
         }
-        console.log("Bosca: Calculated position: ", newX, newY);
+        console.log(`New X: ${newX}, New Y: ${newY}`);
         this._container.style.left = `${newX}px`;
         this._container.style.top = `${newY}px`;
     }

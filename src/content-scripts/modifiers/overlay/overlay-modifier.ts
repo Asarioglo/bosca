@@ -1,5 +1,5 @@
 import { IModifier } from "../../../interfaces";
-import "./overlay.styles.css";
+import "../../assets/styles/overlay.styles.css";
 
 export enum OverlayClasses {
     CONTAINER = "bosca-overlay",
@@ -21,7 +21,7 @@ export class OverlayModifier implements IModifier {
      */
     apply() {
         if (this._overlay) {
-            this._overlay.classList.remove(OverlayClasses.HIDDEN);
+            this.show();
         } else {
             const overlay = document.createElement("div");
             overlay.className = OverlayClasses.CONTAINER;
@@ -32,14 +32,30 @@ export class OverlayModifier implements IModifier {
             this._overlay = overlay;
         }
     }
+
+    isHidden() {
+        if (!this._overlay) return true;
+        return this._overlay.classList.contains(OverlayClasses.HIDDEN);
+    }
+
     /**
      * Hide the modifications, but don't remove the elements from the page.
      */
     hide() {
-        if (this._overlay) {
+        if (this._overlay && !this.isHidden()) {
             this._overlay.classList.add(OverlayClasses.HIDDEN);
         }
     }
+
+    /**
+     * Show the modifications if they were hidden.
+     */
+    show() {
+        if (this._overlay && this.isHidden()) {
+            this._overlay.classList.remove(OverlayClasses.HIDDEN);
+        }
+    }
+
     /**
      * Remove the modifications from the page.
      */
