@@ -2,6 +2,8 @@ import { IPort } from "./i-port";
 
 // 1. Interface Definition
 export interface IRuntime {
+    id: string;
+
     connect(options: { name: string }): IPort;
 
     onConnect: { addListener(callback: (port: IPort) => void): void };

@@ -12,6 +12,7 @@ export interface ConfigEntry {
 
 export interface IConfig extends ConfigEntry {
     version: string;
+    extensionId: string;
     notifications: {
         enabled: boolean;
     };

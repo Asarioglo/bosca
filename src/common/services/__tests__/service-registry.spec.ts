@@ -3,8 +3,14 @@ import { IService } from "../../../interfaces/background/services/i-service";
 import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
 
 class Service implements IService {
-    constructor(serviceProvider: IServiceProvider) {
+    constructor(private initialized = false) {
         // Do nothing
+    }
+
+    start = jest.fn(async () => {});
+
+    isReady() {
+        return this.initialized;
     }
 }
 
@@ -14,7 +20,7 @@ describe("ServiceRegistry", () => {
 
     beforeEach(() => {
         serviceRegistry = new ServiceRegistry();
-        svc = new Service(serviceRegistry);
+        svc = new Service();
     });
 
     afterEach(() => {
@@ -45,5 +51,15 @@ describe("ServiceRegistry", () => {
 
         // Assert that the retrieved service is null
         expect(retrievedService).toBeNull();
+    });
+
+    it("should launch all unstarted services", async () => {
+        const s1 = new Service();
+        const s2 = new Service(true);
+        serviceRegistry.registerService("s1", s1);
+        serviceRegistry.registerService("s2", s2);
+        await serviceRegistry.startServices({} as any);
+        expect(s1.start).toHaveBeenCalledTimes(1);
+        expect(s2.start).toHaveBeenCalledTimes(0);
     });
 });

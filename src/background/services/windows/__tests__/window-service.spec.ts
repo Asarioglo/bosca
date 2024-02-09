@@ -3,8 +3,9 @@ import {
     IWindow,
     IWindows,
 } from "../../../../interfaces/common/runtime/i-windows";
-import {
+import getMockBrowser, {
     GenericEmitter,
+    IMockBrowser,
     MockWindow,
     MockWindows,
 } from "../../../../../tests/utils/mock-runtime";
@@ -13,10 +14,13 @@ describe("WindowService", () => {
     let windowService: WindowService;
     let mockWindows: IWindows;
     let mockWindow: IWindow;
+    let browser: IMockBrowser;
 
     beforeEach(() => {
-        mockWindows = new MockWindows();
-        windowService = new WindowService(mockWindows);
+        browser = getMockBrowser();
+        mockWindow = new MockWindow();
+        mockWindows = browser.windows;
+        windowService = new WindowService(browser);
     });
 
     afterEach(() => {

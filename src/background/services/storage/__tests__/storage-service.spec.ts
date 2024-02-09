@@ -1,18 +1,16 @@
 import { StorageService } from "../storage-service";
 import { IStorage } from "../../../../interfaces/common/runtime/i-storage";
+import getMockBrowser from "../../../../../tests/utils/mock-runtime";
 
 describe("StorageService", () => {
     let storageService: StorageService;
 
     beforeEach(() => {
         // Create a mock implementation of IStorage
-        const storageMock: any = {
-            get: jest.fn(),
-            set: jest.fn(),
-        } as IStorage;
+        const browser = getMockBrowser();
 
         // Create an instance of StorageService with the mock implementation
-        storageService = new StorageService(storageMock);
+        storageService = new StorageService(browser);
     });
 
     afterEach(() => {
@@ -24,35 +22,32 @@ describe("StorageService", () => {
             // Arrange
             const key = "testKey";
             const value = "testValue";
-            const storageMock = {
-                get: jest.fn().mockResolvedValue(value),
-                set: jest.fn(),
+            const browser = getMockBrowser();
+            browser.storage.config = {
+                [key]: value,
             };
-            storageService = new StorageService(storageMock);
+            storageService = new StorageService(browser);
 
             // Act
             const result = await storageService.get<string>(key);
 
             // Assert
             expect(result).toBe(value);
-            expect(storageMock.get).toHaveBeenCalledWith(key);
+            expect(browser.storage.get).toHaveBeenCalledWith(key);
         });
 
         it("should return null if the value is not found in storage", async () => {
             // Arrange
             const key = "testKey";
-            const storageMock = {
-                get: jest.fn().mockResolvedValue(undefined),
-                set: jest.fn(),
-            };
-            storageService = new StorageService(storageMock);
+            const browser = getMockBrowser();
+            storageService = new StorageService(browser);
 
             // Act
             const result = await storageService.get<string>(key);
 
             // Assert
             expect(result).toBeNull();
-            expect(storageMock.get).toHaveBeenCalledWith(key);
+            expect(browser.storage.get).toHaveBeenCalledWith(key);
         });
     });
 

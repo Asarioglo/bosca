@@ -20,8 +20,9 @@ describe("app", () => {
         expect(Interfaces).toBeDefined();
     });
 
-    it("should run an application", () => {
-        const app = new Background.BackgroundApp(chrome, {} as any);
+    it("should run an application", async () => {
+        const app = new Background.BackgroundApp(chrome);
+        await app.start({} as any);
         const contentApp = new ContentScripts.ContentApp(chrome, "test");
     });
 });

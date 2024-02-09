@@ -2,6 +2,10 @@ import { ConfigService } from "../../config/config-service";
 import { BGCoreServices } from "../../core-services";
 import { HTTPService, HTTPResponseError } from "../http-service";
 import { ServiceRegistry } from "../../../../common/services/service-registry";
+import { IBrowser } from "../../../../interfaces";
+import getMockBrowser from "../../../../../tests/utils/mock-runtime";
+import { StorageService } from "../../storage/storage-service";
+import { getBaseServiceRegistry } from "../../../../../tests/utils/base-service-registry";
 
 describe("HTTPService", () => {
     let httpService: HTTPService;
@@ -10,21 +14,30 @@ describe("HTTPService", () => {
     let responseData = { message: "Hello, World!" };
     let mockFetch: any;
     let mockOkResponse: any;
+    let browser: IBrowser;
 
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    beforeEach(() => {
-        serviceRegistry = new ServiceRegistry();
-        cfgService = new ConfigService(serviceRegistry);
-        cfgService.set("backendHost", "https://test_host.com");
+    beforeEach(async () => {
+        const [s, b] = getBaseServiceRegistry();
+        browser = b;
+        serviceRegistry = s;
+
+        cfgService = new ConfigService("testId");
+        await cfgService.start(browser, serviceRegistry);
+        await cfgService.set("backendHost", "https://test_host.com");
         serviceRegistry.registerService(BGCoreServices.CONFIG, cfgService);
-        httpService = new HTTPService(serviceRegistry);
+
+        httpService = new HTTPService();
+        await httpService.start(browser, serviceRegistry);
+
         mockOkResponse = {
             ok: true,
             json: jest.fn().mockResolvedValue(responseData),
         } as any;
+
         mockFetch = jest
             .spyOn(global, "fetch")
             .mockResolvedValue(mockOkResponse);
@@ -34,14 +47,19 @@ describe("HTTPService", () => {
         jest.clearAllMocks();
     });
 
-    it("should fail to initialize with wrong config", () => {
+    it("should fail to initialize with wrong config", async () => {
         const svcRegistry = new ServiceRegistry();
-        expect(() => new HTTPService(svcRegistry)).toThrow(
+        const svc = new HTTPService();
+        expect(
+            async () => await svc.start(browser, svcRegistry),
+        ).rejects.toThrow(
             "Can't initialize HTTP service. Dependency missing: ConfigService",
         );
-        cfgService.set("backendHost", "test_host.com");
+        await cfgService.set("backendHost", "test_host.com");
         svcRegistry.registerService(BGCoreServices.CONFIG, cfgService);
-        expect(() => new HTTPService(svcRegistry)).toThrow(
+        expect(
+            async () => await svc.start(browser, svcRegistry),
+        ).rejects.toThrow(
             "Backend host in config should start with http:// or https://",
         );
     });

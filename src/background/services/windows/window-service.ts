@@ -1,19 +1,25 @@
+import { IBrowser, IService, IServiceProvider } from "../../../interfaces";
 import {
     IWindow,
     IWindows,
 } from "../../../interfaces/common/runtime/i-windows";
 
-export class WindowService {
-    private _openWindows: { [key: string]: IWindow };
-    private _windows: IWindows;
+export class WindowService implements IService {
+    private _openWindows: { [key: string]: IWindow } = {};
+    private _windows!: IWindows;
 
-    constructor(windows: IWindows) {
-        this._windows = windows;
-        this._openWindows = {};
+    constructor(browser: IBrowser) {
+        this._windows = browser.windows;
+    }
+
+    async start(browser: IBrowser, serviceProvider: IServiceProvider) {}
+
+    isReady(): boolean {
+        return this._windows !== undefined;
     }
 
     closeAllWindows() {
-        if (!this._windows) {
+        if (!this.isReady()) {
             throw new Error("Windows service is not initialized");
         }
         for (let windowId in this._openWindows) {
@@ -35,7 +41,7 @@ export class WindowService {
         type: "popup" | "panel" | "normal" = "popup",
         closedCallback?: () => void,
     ) {
-        if (!this._windows) {
+        if (!this.isReady()) {
             throw new Error("Windows service is not initialized");
         }
         this.closeAllWindows();

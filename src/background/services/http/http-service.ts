@@ -9,6 +9,7 @@ import urlJoin from "../../utils/url-join";
 import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
 import { IConfigManager } from "../../../interfaces/background/services/i-config-manager";
 import { IService } from "../../../interfaces/background/services/i-service";
+import { IBrowser } from "../../../interfaces";
 
 export class HTTPResponseError extends Error implements IHTTPResponseError {
     response: Response;
@@ -28,7 +29,9 @@ export class HTTPService implements IService {
     private _backendHost: string | null = null;
     private _headerModifiers: HeaderModifier[] = [];
 
-    constructor(serviceProvider: IServiceProvider) {
+    constructor() {}
+
+    async start(bowser: IBrowser, serviceProvider: IServiceProvider) {
         const configService = serviceProvider.getService(BGCoreServices.CONFIG);
         if (!configService) {
             throw new Error(
@@ -41,6 +44,7 @@ export class HTTPService implements IService {
             this._logger.warn(
                 "Backend host missing from config. If the urls are not absolute, the requests will fail.",
             );
+            this._backendHost = "";
         } else {
             if (!host.startsWith("http://") && !host.startsWith("https://")) {
                 throw new Error(
@@ -49,6 +53,10 @@ export class HTTPService implements IService {
             }
         }
         this._backendHost = host;
+    }
+
+    isReady(): boolean {
+        return this._backendHost !== null;
     }
 
     addHeaderModifier(modifier: HeaderModifier) {
@@ -72,6 +80,9 @@ export class HTTPService implements IService {
         params?: IHTTPRequestParams,
         oneTimeHeaders?: Headers,
     ) {
+        if (!this.isReady()) {
+            throw new Error("HTTPService not initialized");
+        }
         let fullUrl = this._buildURL(url, params);
         const reqParams = this._requestInit("GET", null, oneTimeHeaders);
         const request = new Request(fullUrl, reqParams);
@@ -84,6 +95,8 @@ export class HTTPService implements IService {
     }
 
     async post(url: string, data: any, oneTimeHeaders?: Headers) {
+        if (!this.isReady()) throw new Error("HTTPService not initialized");
+
         let fullUrl = this._buildURL(url);
         const reqParams = this._requestInit("POST", data, oneTimeHeaders);
         const request = new Request(fullUrl, reqParams);
@@ -96,6 +109,8 @@ export class HTTPService implements IService {
     }
 
     async put(url: string, data: any, oneTimeHeaders?: Headers) {
+        if (!this.isReady()) throw new Error("HTTPService not initialized");
+
         let fullUrl = this._buildURL(url);
         const reqParams = this._requestInit("PUT", data, oneTimeHeaders);
         const request = new Request(fullUrl, reqParams);
@@ -124,12 +139,9 @@ export class HTTPService implements IService {
         uri: string,
         params: Record<string, string | number> | null = null,
     ) {
-        let host = this._backendHost;
+        let host = this._backendHost as string;
         if (uri.startsWith("http://") || uri.startsWith("https://")) {
             host = "";
-        }
-        if (host === null) {
-            throw new Error("HTTPService not initialized");
         }
 
         let url_str = urlJoin(host, uri);

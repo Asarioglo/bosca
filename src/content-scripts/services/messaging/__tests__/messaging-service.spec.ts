@@ -30,7 +30,8 @@ describe("BackgroundConnection", () => {
         browser = getMockRuntime();
         connection = new BackgroundConnection(browser);
         port = await getConnectedPort();
-        service = new MessagingService(connection, browser);
+        service = new MessagingService(connection);
+        await service.start(browser, {} as any);
     });
 
     afterEach(() => {

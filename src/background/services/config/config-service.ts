@@ -4,23 +4,65 @@ import {
     SupportedConfigValues,
 } from "../../../interfaces/common/iconfig";
 import { IConfigManager } from "../../../interfaces/background/services/i-config-manager";
-import { IServiceProvider } from "../../../interfaces";
+import { IBrowser, IServiceProvider } from "../../../interfaces";
 import {
     ConfigChangeMessage,
     ConfigChangePayload,
     CoreEvents,
 } from "../../core-events";
 import { BGCoreServices } from "../core-services";
-import { MessagingService } from "../messaging/messaging-service";
-import { PluginMessagingService } from "../messaging/plugin-messaging-service";
+import { IMessageDispatcher } from "../../../interfaces";
+import { EventEmitter } from "../../../common";
+import { StorageService } from "../storage/storage-service";
 
 export class ConfigService<T = IConfig> implements IConfigManager {
     private _config = new Map<string, SupportedConfigValues>();
-    private _svcRegistry: IServiceProvider;
+    private _svcRegistry: IServiceProvider | null = null;
+    private _storage: StorageService | null = null;
+    private _extensionId: string = "";
+    private _msgService: IMessageDispatcher | null = null;
+    private _pluginMessagingService: EventEmitter | null = null;
 
-    constructor(svcRegistry: IServiceProvider, config?: T) {
-        this._svcRegistry = svcRegistry;
-        if (config) this.set(config);
+    constructor(extId: string) {
+        this._extensionId = extId;
+    }
+
+    async start(browser: IBrowser, serviceProvider: IServiceProvider) {
+        this._svcRegistry = serviceProvider;
+        this._storage = serviceProvider.getService<StorageService>(
+            BGCoreServices.STORAGE,
+        );
+        if (this._storage === null) {
+            throw new Error(
+                "Failed to start Config Service: Storage service not in service registry.",
+            );
+        }
+        this._msgService = this._svcRegistry.getService<IMessageDispatcher>(
+            BGCoreServices.MESSAGING,
+        );
+        if (!this._msgService) {
+            throw new Error(
+                "Failed to start Config Service: Messaging service not in service registry.",
+            );
+        }
+        this._pluginMessagingService =
+            this._svcRegistry.getService<EventEmitter>(
+                BGCoreServices.PLUGIN_MESSAGING,
+            );
+        if (!this._pluginMessagingService) {
+            throw new Error(
+                "Failed to start Config Service: Plugin messaging service not in service registry.",
+            );
+        }
+    }
+
+    isReady(): boolean {
+        return (
+            this._svcRegistry !== null &&
+            this._storage !== null &&
+            this._msgService !== null &&
+            this._pluginMessagingService !== null
+        );
     }
 
     /**
@@ -34,15 +76,10 @@ export class ConfigService<T = IConfig> implements IConfigManager {
         return this._config.get(key) || null;
     }
 
-    /**
-     *
-     * @param key
-     * @param value
-     */
-    public set(
-        key: string | object,
+    private _set(
+        key: string | T,
         value: SupportedConfigValues = null,
-    ): void {
+    ): ConfigChangePayload {
         const changes = {} as ConfigChangePayload;
 
         if (typeof key === "string") {
@@ -50,19 +87,74 @@ export class ConfigService<T = IConfig> implements IConfigManager {
         } else if (typeof key === "object") {
             this._setRecursive(key as ConfigEntry, changes);
         }
-        if (this._svcRegistry && Object.keys(changes).length > 0) {
-            this._svcRegistry
-                .getService<MessagingService>(BGCoreServices.MESSAGING)
-                ?.broadcastMessage({
-                    type: CoreEvents.CONFIG_CHANGED,
-                    payload: changes,
-                } as ConfigChangeMessage);
-            this._svcRegistry
-                .getService<PluginMessagingService>(
-                    BGCoreServices.PLUGIN_MESSAGING,
-                )
-                ?.emit(CoreEvents.CONFIG_CHANGED, changes);
+        return changes;
+    }
+
+    /**
+     *
+     * @param key
+     * @param value
+     * @param noSave If true, the config will not be saved to storage.
+     */
+    public async set(
+        key: string | T,
+        value: SupportedConfigValues = null,
+        noSave: boolean = false,
+    ): Promise<void> {
+        if (!this.isReady()) {
+            throw new Error(
+                "Config service has not been started, or failed to start. Cannot set config.",
+            );
         }
+        const changes = this._set(key, value);
+
+        !noSave && (await this.save());
+
+        if (this._svcRegistry && Object.keys(changes).length > 0) {
+            this._msgService!.broadcastMessage({
+                type: CoreEvents.CONFIG_CHANGED,
+                payload: changes,
+            } as ConfigChangeMessage);
+            this._pluginMessagingService!.emit(
+                CoreEvents.CONFIG_CHANGED,
+                changes,
+            );
+        }
+    }
+
+    public async save() {
+        if (this._storage) {
+            try {
+                await this._storage.set(
+                    `${this._extensionId}_config`,
+                    this.getFullConfig(),
+                );
+            } catch (e) {
+                console.error("Error saving config to storage", e);
+            }
+        }
+    }
+
+    /**
+     * Load the configuration from storage.
+     * When configuration is loaded, if exists, it will be set to the current configuration,
+     * and the total configuration will be saved back to the storage.
+     * Designed to be called after a set and override the current configuration with stored.
+     */
+    public async load() {
+        if (!this.isReady()) {
+            throw new Error(
+                "Config service has not been started, or failed to start. Cannot load config.",
+            );
+        }
+        try {
+            const config: T | null = await this._storage!.get<T>(
+                `${this._extensionId}_config`,
+            );
+            if (config !== null) {
+                await this.set(config);
+            }
+        } catch (e) {}
     }
 
     private _setNormal(

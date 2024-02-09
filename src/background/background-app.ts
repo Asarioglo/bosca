@@ -33,19 +33,38 @@ export class BackgroundApp {
     private _svcRegistry = new ServiceRegistry();
     private _pluginRegistry: IPluginRegistry;
 
-    constructor(browser: IBrowser, config: IConfig) {
+    constructor(browser: IBrowser) {
         this._browser = browser;
         this._pluginRegistry = new PluginRegistry();
 
         // Initializing services here so that the user can use them before launching.
         // For example, add configs to config service. If the user wants to override,
         // they can do so before calling start() by registering a service with the same name.
-        this._initServices(config);
+        this._initServices();
     }
 
-    async start() {
+    async start(config: IConfig) {
+        // Other services depend on config service to be loaded and ready.
+        this._initConfigService(config);
         this._initListeners();
+        await this._svcRegistry.startServices(this._browser);
         await this._pluginRegistry.launch(this._browser, this._svcRegistry);
+    }
+
+    async _initConfigService(config: IConfig) {
+        const configService = this._svcRegistry.getService<ConfigService>(
+            BGCoreServices.CONFIG,
+        );
+        if (!configService) {
+            throw new Error(
+                "Config service not found. If you replaced the default service registry, make sure you register the config service.",
+            );
+        }
+        await configService.start(this._browser, this._svcRegistry);
+        await configService.set(config);
+        await configService.load();
+        await configService.set("version", this._extractVersion());
+        await configService.set("extensionId", this._extractExtensionId());
     }
 
     getServiceRegistry() {
@@ -56,34 +75,41 @@ export class BackgroundApp {
         return this._pluginRegistry;
     }
 
-    private _initServices(config: IConfig) {
-        const configService = new ConfigService(this._svcRegistry, config);
-        configService.set("version", this._extractVersion());
-        this._svcRegistry.registerService(BGCoreServices.CONFIG, configService);
+    private _initServices() {
+        const extId = this._extractExtensionId();
 
+        const storageService = new StorageService(this._browser);
+        const messagingService = new MessagingService(this._browser);
+        const pluginMessagingService = new PluginMessagingService();
         this._svcRegistry.registerService(
-            BGCoreServices.HTTP,
-            new HTTPService(this._svcRegistry),
+            BGCoreServices.STORAGE,
+            storageService,
         );
         this._svcRegistry.registerService(
             BGCoreServices.MESSAGING,
-            new MessagingService(this._browser.runtime),
+            messagingService,
         );
         this._svcRegistry.registerService(
             BGCoreServices.PLUGIN_MESSAGING,
-            new PluginMessagingService(this._svcRegistry),
+            pluginMessagingService,
+        );
+
+        this._svcRegistry.registerService(
+            BGCoreServices.CONFIG,
+            new ConfigService(extId),
+        );
+
+        this._svcRegistry.registerService(
+            BGCoreServices.HTTP,
+            new HTTPService(),
         );
         this._svcRegistry.registerService(
             BGCoreServices.NOTIFICATION,
-            new NotificationService(this._svcRegistry),
+            new NotificationService(),
         );
         this._svcRegistry.registerService(
             BGCoreServices.WINDOW,
-            new WindowService(this._browser.windows),
-        );
-        this._svcRegistry.registerService(
-            BGCoreServices.STORAGE,
-            new StorageService(this._browser.storage),
+            new WindowService(this._browser),
         );
     }
 
@@ -229,7 +255,7 @@ export class BackgroundApp {
                     configService.set(payload.key, payload.value);
                 }
                 if (payload.config) {
-                    configService.set(payload.config);
+                    configService.set(payload.config as IConfig);
                 }
             },
         );
@@ -238,6 +264,10 @@ export class BackgroundApp {
     private _extractVersion(): string {
         const manifest = this._browser.runtime.getManifest();
         return manifest.version;
+    }
+
+    private _extractExtensionId(): string {
+        return this._browser.runtime.id;
     }
 
     private _ammendState(state: any) {

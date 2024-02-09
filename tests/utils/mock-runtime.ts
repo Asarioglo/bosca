@@ -65,8 +65,23 @@ export class MockPort implements IPort {
 }
 
 export class MockStorage implements IStorage {
-    public get = jest.fn();
-    public set = jest.fn();
+    public timeout = 1;
+    public config: any = {};
+    public get = jest.fn(async (key: string) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(this.config[key] || null);
+            }, this.timeout);
+        });
+    });
+    public set = jest.fn(async (key: string, val: any): Promise<void> => {
+        return new Promise((resolve) => {
+            this.config[key] = val;
+            setTimeout(() => {
+                resolve();
+            }, this.timeout);
+        });
+    });
 }
 
 export class MockWindow implements IWindow {
@@ -96,6 +111,7 @@ export class MockWindows implements IWindows {
 }
 
 export class MockRuntime implements IRuntime {
+    id: string = "test_id";
     lastPort = new MockPort("test_port");
 
     connect = jest.fn((options: { name: string }): IPort => {
@@ -121,10 +137,17 @@ export class MockExtension implements IExtension {
     getURL = jest.fn();
 }
 
+export interface IMockBrowser {
+    runtime: MockRuntime;
+    storage: MockStorage;
+    windows: MockWindows;
+    extension: MockExtension;
+}
+
 export default () =>
     ({
         runtime: new MockRuntime(),
         storage: new MockStorage(),
         windows: new MockWindows(),
         extension: new MockExtension(),
-    }) as IBrowser;
+    }) as IMockBrowser;

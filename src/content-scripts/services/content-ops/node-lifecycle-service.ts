@@ -1,3 +1,4 @@
+import { IBrowser, IService, IServiceProvider } from "../../../interfaces";
 import { NodeSelector, SelectorOptions } from "./node-selector";
 
 export type IChangeCallback = (node: HTMLElement) => void;
@@ -12,14 +13,25 @@ type Subscription = {
  * It uses MutationObserver to listen to the changes in the DOM and can detect
  * changes by a class, id, or any other attribute.
  */
-export class NodeLifecycleService {
+export class NodeLifecycleService implements IService {
     private _insertedSubscriptions: Subscription[];
     private _removedSubscriptions: Subscription[];
+    private _mutationObserver: MutationObserver | null = null;
 
     constructor() {
         this._insertedSubscriptions = [];
         this._removedSubscriptions = [];
+    }
+
+    async start(
+        browser: IBrowser,
+        serviceProvider: IServiceProvider,
+    ): Promise<void> {
         this._initializeMutationObserver();
+    }
+
+    isReady(): boolean {
+        return this._mutationObserver !== null;
     }
 
     /**
@@ -54,6 +66,7 @@ export class NodeLifecycleService {
             childList: true,
             subtree: true,
         });
+        this._mutationObserver = observer;
     }
 
     private _onMutation(mutations: MutationRecord[]): void {

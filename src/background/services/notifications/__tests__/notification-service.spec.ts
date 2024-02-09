@@ -7,20 +7,24 @@ import { GlobalMessageTypes } from "../../../../common/messaging/global-message-
 import { IServiceProvider } from "../../../../interfaces/background/services/i-service-provider";
 import { Message } from "../../../../interfaces/common/messaging/message";
 import { MockMessagingService } from "../../../../../tests/utils/mock-messaging-service";
+import { getBaseServiceRegistry } from "../../../../../tests/utils/base-service-registry";
 
 describe("NotificationService", () => {
     let notificationService: NotificationService;
     let serviceRegistry: IServiceProvider;
-    let messagingService: any;
+    let messagingService: MockMessagingService;
 
-    beforeEach(() => {
-        serviceRegistry = new ServiceRegistry();
+    beforeEach(async () => {
+        const [s, browser] = getBaseServiceRegistry();
+        serviceRegistry = s;
         messagingService = new MockMessagingService();
         serviceRegistry.registerService(
             BGCoreServices.MESSAGING,
-            messagingService as MessagingService,
+            messagingService,
         );
-        notificationService = new NotificationService(serviceRegistry);
+
+        notificationService = new NotificationService();
+        notificationService.start(browser, serviceRegistry);
     });
 
     afterEach(() => {

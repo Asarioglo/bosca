@@ -2,17 +2,19 @@ import { IBrowser } from "../../../../interfaces/common/runtime/i-browser";
 import { MessagingEvents, MessagingService } from "../messaging-service";
 import getMockRuntime, {
     GenericEmitter,
+    IMockBrowser,
     MockPort,
 } from "../../../../../tests/utils/mock-runtime";
 import { Message } from "../../../../interfaces/common/messaging/message";
 
 describe("MessagingService", () => {
-    let browser: IBrowser;
+    let browser: IMockBrowser;
     let service: MessagingService;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         browser = getMockRuntime();
-        service = new MessagingService(browser.runtime);
+        service = new MessagingService(browser);
+        await service.start(browser, {} as any);
     });
 
     afterEach(() => {

@@ -1,5 +1,5 @@
 import { NotificationType } from "../../../common";
-import { INotifier, IService } from "../../../interfaces";
+import { IBrowser, INotifier, IService } from "../../../interfaces";
 import { IServiceProvider } from "../../../interfaces/background/services/i-service-provider";
 import { DefaultNotifier } from "./default-notifier";
 
@@ -10,9 +10,20 @@ export class NotificationService implements IService {
     private _appName: string;
     private _enabled: boolean = true;
 
-    constructor(serviceProvider: IServiceProvider, appName: string) {
+    constructor(appName: string) {
         this.notifier = new DefaultNotifier();
         this._appName = appName;
+    }
+
+    async start(
+        browser: IBrowser,
+        serviceProvider: IServiceProvider,
+    ): Promise<void> {
+        return;
+    }
+
+    isReady(): boolean {
+        return true;
     }
 
     public includeAppNameInMsg(include: boolean) {

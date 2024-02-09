@@ -4,5 +4,6 @@ export * from "./plugin/i-plugin";
 export * from "./services/i-service";
 export * from "./services/i-config-manager";
 export * from "./services/i-service-provider";
+export * from "./services/i-message-dispatcher";
 export * from "./http/i-http-client";
 export * from "./http/i-http-middleware";

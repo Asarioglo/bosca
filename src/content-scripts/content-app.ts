@@ -44,19 +44,13 @@ export class ContentApp {
         if (!this._bgConnector) {
             throw new Error("Background connector not set");
         }
-        const messagingSvc = new MessagingService(
-            this._bgConnector,
-            this._browser,
-        );
+        const messagingSvc = new MessagingService(this._bgConnector);
         this._serviceRegistry.registerService(
             ContentCoreServices.MESSAGING,
             messagingSvc,
         );
 
-        const notificationSvc = new NotificationService(
-            this._serviceRegistry,
-            this._name,
-        );
+        const notificationSvc = new NotificationService(this._name);
         this._serviceRegistry.registerService(
             ContentCoreServices.NOTIFICATION,
             notificationSvc,
@@ -71,6 +65,7 @@ export class ContentApp {
 
     async start(): Promise<void> {
         this._bgConnector.connect();
+        this._serviceRegistry.startServices(this._browser);
         const messagingSvc = this._serviceRegistry.getService<MessagingService>(
             ContentCoreServices.MESSAGING,
         );

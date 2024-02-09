@@ -8,6 +8,12 @@ import {
     MessageManagerEvents,
 } from "./messaging-manager";
 import { PortManager, PortManagerEvents } from "./port-manager";
+import {
+    IBrowser,
+    IMessageDispatcher,
+    IService,
+    IServiceProvider,
+} from "../../../interfaces";
 
 export enum MessagingEvents {
     ASYNC_MESSAGE = "async-message",
@@ -20,17 +26,30 @@ export type ClientConnectionEvent = {
     client: "popup" | "content";
 };
 
-export class MessagingService extends EventEmitter {
-    private messaging: MessageManager;
-    private portMessaging: PortManager;
+export class MessagingService
+    extends EventEmitter
+    implements IMessageDispatcher, IService
+{
+    private messaging!: MessageManager;
+    private portMessaging!: PortManager;
     private _logger: Logger = new Logger("MessagingLayer");
 
     // TODO: constructor should receive ServiceProvider
-    constructor(runtime: IRuntime) {
+    constructor(browser: IBrowser) {
         super();
-        this.messaging = new MessageManager(runtime);
-        this.portMessaging = new PortManager(runtime);
+        this.messaging = new MessageManager(browser.runtime);
+        this.portMessaging = new PortManager(browser.runtime);
+    }
+
+    async start(
+        browser: IBrowser,
+        serviceProvider: IServiceProvider,
+    ): Promise<void> {
         this._connect();
+    }
+
+    isReady(): boolean {
+        return this.messaging !== undefined && this.portMessaging !== undefined;
     }
 
     public override addListener(

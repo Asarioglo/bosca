@@ -13,7 +13,7 @@ describe("NotificationService", () => {
     let notifier: MockNotifier;
 
     beforeEach(() => {
-        service = new NotificationService(svcRegistry, "testAppName");
+        service = new NotificationService("testAppName");
         notifier = new MockNotifier();
         service.setNotifier(notifier);
     });

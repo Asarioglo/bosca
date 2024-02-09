@@ -1,3 +1,4 @@
+import { IBrowser } from "../../interfaces";
 import { IService } from "../../interfaces/background/services/i-service";
 import { IServiceProvider } from "../../interfaces/background/services/i-service-provider";
 
@@ -6,6 +7,16 @@ export class ServiceRegistry implements IServiceProvider {
 
     constructor() {
         this.services = new Map<string, IService>();
+    }
+
+    public async startServices(browser: IBrowser): Promise<void> {
+        const all = [];
+        for (let [name, service] of this.services) {
+            if (!service.isReady()) {
+                all.push(service.start(browser, this));
+            }
+        }
+        await Promise.all(all);
     }
 
     public getServiceNames(): string[] {
