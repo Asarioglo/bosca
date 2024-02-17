@@ -62,45 +62,52 @@ export class MessagingService
         return this;
     }
 
-    private _emitTypedMessage(
-        message: Message | AsyncMessageArgs | ClientConnectionEvent,
-    ) {
+    private _getMessageType(message: Message | AsyncMessageArgs) {
         let type;
         if ((message as AsyncMessageArgs).async) {
             type = (message as AsyncMessageArgs).message.type;
         } else {
             type = (message as Message).type;
         }
-        this.emit(type, message);
+        return type;
+    }
+
+    private _asyncMessageHandler(event: AsyncMessageArgs) {
+        this._logger.log("Async message received: " + event.message.type);
+        if (!this.hasListeners(MessagingEvents.ASYNC_MESSAGE)) {
+        }
+        const type = this._getMessageType(event);
+
+        if (
+            !this.hasListeners(type) &&
+            !this.hasListeners(MessagingEvents.ASYNC_MESSAGE)
+        ) {
+            this._logger.log(
+                `No async message listeners for ${type} message, sending null response.`,
+            );
+            event.sendResponse(null);
+            return;
+        }
+
+        this.emit(MessagingEvents.ASYNC_MESSAGE, event);
+        this.emit(type, event);
     }
 
     private _connect() {
         this.messaging.addListener(
             MessageManagerEvents.INTERNAL_MESSAGE,
-            (event: AsyncMessageArgs) => {
-                this._logger.log(
-                    "Async message received: " + event.message.type,
-                );
-                this.emit(MessagingEvents.ASYNC_MESSAGE, event);
-                this._emitTypedMessage(event);
-            },
+            this._asyncMessageHandler.bind(this),
         );
         this.messaging.addListener(
             MessageManagerEvents.EXTERNAL_MESSAGE,
-            (event: AsyncMessageArgs) => {
-                this._logger.log(
-                    "External async message received: " + event.message.type,
-                );
-                this.emit(MessagingEvents.ASYNC_MESSAGE, event);
-                this._emitTypedMessage(event);
-            },
+            this._asyncMessageHandler.bind(this),
         );
         this.portMessaging.addListener(
             PortManagerEvents.PORT_MESSAGE,
             (message: Message) => {
                 this._logger.log("Port message received: " + message.type);
                 this.emit(MessagingEvents.MESSAGE, message);
-                this._emitTypedMessage(message);
+                this.emit(this._getMessageType(message), message);
             },
         );
         this.portMessaging.addListener(

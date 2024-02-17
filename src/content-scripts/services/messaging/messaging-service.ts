@@ -27,7 +27,7 @@ export class MessagingService extends EventEmitter implements IService {
     }
 
     isReady(): boolean {
-        return this._connection !== undefined && this._browser !== undefined;
+        return this._connection !== undefined;
     }
 
     private _onMessage(message: Message): void {

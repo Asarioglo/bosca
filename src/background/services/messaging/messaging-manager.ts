@@ -23,6 +23,10 @@ export class MessageManager extends EventEmitter {
         this._startListening();
     }
 
+    _default_listener(message: any, sender: any, sendResponse: any) {
+        sendResponse(null);
+    }
+
     _startListening() {
         this._runtime!.onMessage.addListener(this._onMessage.bind(this));
         this._runtime!.onMessageExternal.addListener(

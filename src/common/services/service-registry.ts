@@ -1,22 +1,27 @@
 import { IBrowser } from "../../interfaces";
 import { IService } from "../../interfaces/background/services/i-service";
 import { IServiceProvider } from "../../interfaces/background/services/i-service-provider";
+import Logger from "../utils/logger";
 
 export class ServiceRegistry implements IServiceProvider {
     private services: Map<string, IService>;
+    private _logger = Logger.getLogger("ServiceRegistry");
 
     constructor() {
         this.services = new Map<string, IService>();
     }
 
     public async startServices(browser: IBrowser): Promise<void> {
-        const all = [];
+        const all: Promise<any>[] = [];
+        const names: string[] = [];
         for (let [name, service] of this.services) {
-            if (!service.isReady()) {
+            if (service.isReady()) {
                 all.push(service.start(browser, this));
+                names.push(name);
             }
         }
         await Promise.all(all);
+        this._logger.log(`Started services: ${names.join(", ")}`);
     }
 
     public getServiceNames(): string[] {

@@ -45,10 +45,12 @@ export class BackgroundApp {
 
     async start(config: IConfig) {
         // Other services depend on config service to be loaded and ready.
-        this._initConfigService(config);
+        await this._initConfigService(config);
         this._initListeners();
         await this._svcRegistry.startServices(this._browser);
+        this._logger.log("Services started");
         await this._pluginRegistry.launch(this._browser, this._svcRegistry);
+        this._logger.log("Plugins launched");
     }
 
     async _initConfigService(config: IConfig) {
@@ -65,6 +67,7 @@ export class BackgroundApp {
         await configService.load();
         await configService.set("version", this._extractVersion());
         await configService.set("extensionId", this._extractExtensionId());
+        this._logger.log("Config service ready");
     }
 
     getServiceRegistry() {
@@ -171,6 +174,7 @@ export class BackgroundApp {
         this._hearStateRequests(messagingService);
         this._hearNotificationRequests(messagingService, notificationService);
         this._hearConfigChangeRequests(messagingService, configService);
+        this._logger.log("Listeners initialized");
     }
 
     private _hearNotificationRequests(

@@ -196,6 +196,9 @@ export class BackgroundConnection implements IBackgroundConnection {
     }
 
     onMessage(callback: (message: Message) => void): void {
+        if (this._onMessageCallback) {
+            console.warn("Overwriting existing onMessage callback");
+        }
         this._onMessageCallback = callback;
     }
 

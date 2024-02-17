@@ -199,4 +199,15 @@ describe("MessagingService", () => {
             type: "test",
         });
     });
+
+    it("should handle async message without listeners", () => {
+        let sendResponse = jest.fn();
+        browser.runtime.onMessage.emit(
+            { type: "test" } as Message,
+            "sender",
+            sendResponse,
+        );
+        expect(sendResponse).toHaveBeenCalledTimes(1);
+        expect(sendResponse).toHaveBeenCalledWith(null);
+    });
 });

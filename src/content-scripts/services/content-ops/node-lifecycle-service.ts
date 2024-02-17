@@ -31,7 +31,7 @@ export class NodeLifecycleService implements IService {
     }
 
     isReady(): boolean {
-        return this._mutationObserver !== null;
+        return true;
     }
 
     /**
@@ -61,12 +61,13 @@ export class NodeLifecycleService implements IService {
     }
 
     private _initializeMutationObserver(): void {
-        const observer = new MutationObserver(this._onMutation.bind(this));
-        observer.observe(document, {
+        this._mutationObserver = new MutationObserver(
+            this._onMutation.bind(this),
+        );
+        this._mutationObserver.observe(document, {
             childList: true,
             subtree: true,
         });
-        this._mutationObserver = observer;
     }
 
     private _onMutation(mutations: MutationRecord[]): void {

@@ -53,9 +53,9 @@ describe("ServiceRegistry", () => {
         expect(retrievedService).toBeNull();
     });
 
-    it("should launch all unstarted services", async () => {
-        const s1 = new Service();
-        const s2 = new Service(true);
+    it("should launch all ready services", async () => {
+        const s1 = new Service(true);
+        const s2 = new Service();
         serviceRegistry.registerService("s1", s1);
         serviceRegistry.registerService("s2", s2);
         await serviceRegistry.startServices({} as any);

@@ -65,7 +65,7 @@ export class ContentApp {
 
     async start(): Promise<void> {
         this._bgConnector.connect();
-        this._serviceRegistry.startServices(this._browser);
+        await this._serviceRegistry.startServices(this._browser);
         const messagingSvc = this._serviceRegistry.getService<MessagingService>(
             ContentCoreServices.MESSAGING,
         );
